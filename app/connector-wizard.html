@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Connect Your Data - DataFlow Analytics Platform">
+    <title>Connect Your Data - DataFlow Analytics</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/logos/favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/app.css">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Connector Wizard Specific Styles */
+        .wizard-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .wizard-progress {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .progress-header {
+            text-align: center;
+            margin-bottom: var(--space-6);
+        }
+
+        .progress-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .progress-subtitle {
+            font-size: var(--font-size-base);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .step-indicators {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-bottom: var(--space-2);
+        }
+
+        .step-indicators::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--color-gray-300);
+            z-index: 1;
+        }
+
+        .step-progress-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 2px;
+            background: var(--color-success);
+            z-index: 2;
+            transition: width 0.5s ease;
+        }
+
+        .step-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-sm);
+            z-index: 3;
+            position: relative;
+            transition: var(--transition-base);
+        }
+
+        .step-indicator.completed {
+            background: var(--color-success);
+            color: var(--text-white);
+        }
+
+        .step-indicator.active {
+            background: var(--color-primary);
+            color: var(--text-white);
+            box-shadow: 0 0 0 4px var(--color-primary-light);
+        }
+
+        .step-indicator.pending {
+            background: var(--color-gray-300);
+            color: var(--text-white);
+        }
+
+        .step-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--space-3);
+        }
+
+        .step-label {
+            text-align: center;
+            flex: 1;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .step-label.active {
+            color: var(--color-primary);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .step-label.completed {
+            color: var(--color-success);
+        }
+
+        .wizard-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .step-content {
+            display: none;
+            flex: 1;
+            padding: var(--space-8);
+        }
+
+        .step-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .step-header {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-4);
+            color: var(--text-white);
+            font-size: 2rem;
+        }
+
+        .step-icon.sap {
+            background: linear-gradient(135deg, #0057b8 0%, #1f5582 100%);
+        }
+
+        .step-icon.quickbooks {
+            background: linear-gradient(135deg, #0077c5 0%, #00a4e4 100%);
+        }
+
+        .step-icon.bamboohr {
+            background: linear-gradient(135deg, #6cc04a 0%, #8bc34a 100%);
+        }
+
+        .step-icon.salesforce {
+            background: linear-gradient(135deg, #00a1e0 0%, #0099df 100%);
+        }
+
+        .step-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .step-description {
+            font-size: var(--font-size-base);
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .source-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-4);
+            margin-top: var(--space-6);
+        }
+
+        .source-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .source-card:hover {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+
+        .source-card.selected {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+            box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+        }
+
+        .source-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-3);
+            color: var(--text-white);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .source-name {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .source-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .form-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .form-section-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-4) 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .wizard-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-6) var(--space-8);
+            border-top: 1px solid var(--border-secondary);
+            background: var(--bg-secondary);
+        }
+
+        .action-btn {
+            padding: var(--space-3) var(--space-6);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .action-btn.primary {
+            background: var(--color-primary);
+            color: var(--text-white);
+            border: none;
+        }
+
+        .action-btn.primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .action-btn.secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .action-btn.secondary:hover {
+            color: var(--text-primary);
+            border-color: var(--color-primary);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, var(--color-info-light) 0%, #e6f7ff 100%);
+            border: 1px solid rgba(24, 144, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin: var(--space-6) 0;
+        }
+
+        .info-box-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .info-box-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-info);
+            margin: 0;
+        }
+
+        .info-box-content {
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .test-connection {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            margin: var(--space-6) 0;
+            text-align: center;
+        }
+
+        .test-result {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            margin-top: var(--space-3);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .test-result.success {
+            color: var(--color-success);
+        }
+
+        .test-result.error {
+            color: var(--color-error);
+        }
+
+        .test-result.testing {
+            color: var(--color-info);
+        }
+
+        .success-animation {
+            text-align: center;
+            padding: var(--space-8) var(--space-4);
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--color-success);
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-6);
+            font-size: 3rem;
+            animation: successPulse 2s ease-in-out;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-success);
+            margin: 0 0 var(--space-4) 0;
+        }
+
+        .success-description {
+            font-size: var(--font-size-base);
+            color: var(--text-secondary);
+            margin: 0 0 var(--space-6) 0;
+            line-height: 1.6;
+        }
+
+        .success-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-4);
+            margin-top: var(--space-6);
+        }
+
+        .success-stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .wizard-container {
+                margin: 0 var(--space-4);
+            }
+
+            .step-content {
+                padding: var(--space-6);
+            }
+
+            .wizard-actions {
+                padding: var(--space-4);
+                flex-direction: column;
+                gap: var(--space-3);
+            }
+
+            .source-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step-indicators {
+                flex-direction: column;
+                gap: var(--space-2);
+            }
+
+            .step-indicators::before {
+                display: none;
+            }
+
+            .step-labels {
+                flex-direction: column;
+                gap: var(--space-1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <nav class="app-nav">
+                <div class="app-nav-logo">
+                    <h1>DataFlow</h1>
+                    <div class="subtitle">Analytics Platform</div>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Main</div>
+                    <a href="dashboard.html" class="app-nav-item">
+                        <i data-feather="home" class="icon"></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+
+                    <a href="ai-insights.html" class="app-nav-item">
+                        <i data-feather="zap" class="icon"></i>
+                        <span class="text">AI Insights</span>
+                        <span class="badge badge-success">3</span>
+                    </a>
+
+                    <a href="reports.html" class="app-nav-item">
+                        <i data-feather="bar-chart-2" class="icon"></i>
+                        <span class="text">Reports</span>
+                    </a>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Data</div>
+                    <a href="data-connections.html" class="app-nav-item">
+                        <i data-feather="database" class="icon"></i>
+                        <span class="text">Data Sources</span>
+                    </a>
+
+                    <a href="connector-wizard.html" class="app-nav-item active">
+                        <i data-feather="link" class="icon"></i>
+                        <span class="text">Connect New</span>
+                    </a>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Account</div>
+                    <a href="settings.html" class="app-nav-item">
+                        <i data-feather="settings" class="icon"></i>
+                        <span class="text">Settings</span>
+                    </a>
+
+                    <a href="#" class="app-nav-item">
+                        <i data-feather="help-circle" class="icon"></i>
+                        <span class="text">Help & Support</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="app-header-left">
+                    <button class="app-sidebar-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+
+                    <div class="app-welcome">
+                        <div class="app-welcome-message">Connect Your Data</div>
+                        <div class="app-welcome-time">Step-by-step setup wizard</div>
+                    </div>
+                </div>
+
+                <div class="app-header-right">
+                    <div class="app-user-menu">
+                        <div class="app-user-avatar">SC</div>
+                        <div class="app-user-info">
+                            <div class="app-user-name">Sarah Chen</div>
+                            <div class="app-user-status">Online</div>
+                        </div>
+                        <i data-feather="chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="app-content">
+                <div class="wizard-container">
+                    <!-- Progress Indicator -->
+                    <div class="wizard-progress">
+                        <div class="progress-header">
+                            <h1 class="progress-title">Connect Your Data Source</h1>
+                            <p class="progress-subtitle">We'll guide you through connecting your business data in just a few simple steps</p>
+                        </div>
+
+                        <div class="step-indicators">
+                            <div class="step-progress-line" style="width: 0%;"></div>
+                            <div class="step-indicator pending" data-step="1">1</div>
+                            <div class="step-indicator pending" data-step="2">2</div>
+                            <div class="step-indicator pending" data-step="3">3</div>
+                            <div class="step-indicator pending" data-step="4">4</div>
+                        </div>
+
+                        <div class="step-labels">
+                            <div class="step-label">Choose Source</div>
+                            <div class="step-label">Enter Details</div>
+                            <div class="step-label">Test Connection</div>
+                            <div class="step-label">Complete Setup</div>
+                        </div>
+                    </div>
+
+                    <!-- Wizard Content -->
+                    <div class="wizard-content">
+                        <!-- Step 1: Choose Data Source -->
+                        <div class="step-content active" id="step-1">
+                            <div class="step-header">
+                                <div class="step-icon" style="background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);">
+                                    <i data-feather="database"></i>
+                                </div>
+                                <h2 class="step-title">Choose Your Data Source</h2>
+                                <p class="step-description">
+                                    Select the business system you'd like to connect. Don't worry - we'll guide you through the setup process.
+                                </p>
+                            </div>
+
+                            <div class="source-grid">
+                                <div class="source-card" data-source="sap" onclick="selectSource('sap', this)">
+                                    <div class="source-logo sap">SAP</div>
+                                    <h3 class="source-name">SAP ERP</h3>
+                                    <p class="source-description">Connect your enterprise resource planning system for comprehensive business data</p>
+                                </div>
+
+                                <div class="source-card" data-source="quickbooks" onclick="selectSource('quickbooks', this)">
+                                    <div class="source-logo quickbooks">QB</div>
+                                    <h3 class="source-name">QuickBooks</h3>
+                                    <p class="source-description">Import your financial data including invoices, expenses, and profit & loss</p>
+                                </div>
+
+                                <div class="source-card" data-source="bamboohr" onclick="selectSource('bamboohr', this)">
+                                    <div class="source-logo bamboohr">HR</div>
+                                    <h3 class="source-name">Bamboo HR</h3>
+                                    <p class="source-description">Connect employee data, payroll information, and HR metrics</p>
+                                </div>
+
+                                <div class="source-card" data-source="salesforce" onclick="selectSource('salesforce', this)">
+                                    <div class="source-logo salesforce">SF</div>
+                                    <h3 class="source-name">Salesforce</h3>
+                                    <p class="source-description">Import your CRM data including leads, opportunities, and customer information</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Connection Details -->
+                        <div class="step-content" id="step-2">
+                            <div class="step-header">
+                                <div class="step-icon quickbooks" id="step-2-icon">
+                                    <i data-feather="key"></i>
+                                </div>
+                                <h2 class="step-title" id="step-2-title">Connect to QuickBooks</h2>
+                                <p class="step-description" id="step-2-description">
+                                    Enter your QuickBooks connection details. We use secure, encrypted connections to protect your data.
+                                </p>
+                            </div>
+
+                            <div class="info-box">
+                                <div class="info-box-header">
+                                    <i data-feather="shield" style="width: 16px; height: 16px; color: var(--color-info);"></i>
+                                    <h4 class="info-box-title">Secure Connection</h4>
+                                </div>
+                                <p class="info-box-content">
+                                    Your login information is encrypted and we never store your passwords. We only access the data you authorize us to read.
+                                </p>
+                            </div>
+
+                            <form id="connection-form">
+                                <div class="form-section">
+                                    <h3 class="form-section-title">Authentication Details</h3>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Company ID</label>
+                                            <input type="text" class="form-input" placeholder="Enter your QuickBooks Company ID" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Username</label>
+                                            <input type="text" class="form-input" placeholder="Your QuickBooks username" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Password</label>
+                                        <input type="password" class="form-input" placeholder="Your QuickBooks password" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h3 class="form-section-title">Sync Preferences</h3>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Sync Frequency</label>
+                                            <select class="form-input">
+                                                <option value="1h">Every hour</option>
+                                                <option value="4h">Every 4 hours</option>
+                                                <option value="24h">Once daily</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Data Range</label>
+                                            <select class="form-input">
+                                                <option value="1y">Last 12 months</option>
+                                                <option value="2y">Last 24 months</option>
+                                                <option value="all">All historical data</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Step 3: Test Connection -->
+                        <div class="step-content" id="step-3">
+                            <div class="step-header">
+                                <div class="step-icon quickbooks" id="step-3-icon">
+                                    <i data-feather="zap"></i>
+                                </div>
+                                <h2 class="step-title">Test Your Connection</h2>
+                                <p class="step-description">
+                                    We'll test the connection to make sure everything is working properly before we start syncing your data.
+                                </p>
+                            </div>
+
+                            <div class="test-connection">
+                                <h3>Connection Test</h3>
+                                <p>Click the button below to test your connection settings</p>
+                                <button class="btn btn-primary" id="test-connection-btn" onclick="testConnection()">
+                                    <i data-feather="zap" style="width: 16px; height: 16px;"></i>
+                                    Test Connection
+                                </button>
+                                <div class="test-result" id="test-result" style="display: none;">
+                                    <i data-feather="check-circle"></i>
+                                    Connection successful!
+                                </div>
+                            </div>
+
+                            <div class="info-box">
+                                <div class="info-box-header">
+                                    <i data-feather="info" style="width: 16px; height: 16px; color: var(--color-info);"></i>
+                                    <h4 class="info-box-title">What We're Testing</h4>
+                                </div>
+                                <p class="info-box-content">
+                                    • Verifying your login credentials<br>
+                                    • Checking data access permissions<br>
+                                    • Testing the connection stability<br>
+                                    • Confirming data format compatibility
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Success -->
+                        <div class="step-content" id="step-4">
+                            <div class="success-animation">
+                                <div class="success-icon">
+                                    <i data-feather="check"></i>
+                                </div>
+                                <h2 class="success-title">🎉 Connection Complete!</h2>
+                                <p class="success-description">
+                                    Your QuickBooks data is now connected and we've started syncing your information. You'll start seeing insights in your dashboard within the next few minutes.
+                                </p>
+
+                                <div class="success-stats">
+                                    <div class="success-stat">
+                                        <div class="stat-value" data-counter="1247">0</div>
+                                        <div class="stat-label">Transactions Found</div>
+                                    </div>
+                                    <div class="success-stat">
+                                        <div class="stat-value" data-counter="24">0</div>
+                                        <div class="stat-label">Months of Data</div>
+                                    </div>
+                                    <div class="success-stat">
+                                        <div class="stat-value">5 min</div>
+                                        <div class="stat-label">Est. Sync Time</div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 32px;">
+                                    <a href="dashboard.html" class="btn btn-primary btn-lg">
+                                        <i data-feather="home" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                                        Go to Dashboard
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wizard Actions -->
+                    <div class="wizard-actions">
+                        <button class="action-btn secondary" id="back-btn" onclick="previousStep()" style="display: none;">
+                            <i data-feather="arrow-left"></i>
+                            Back
+                        </button>
+                        <div></div> <!-- Spacer -->
+                        <button class="action-btn primary" id="next-btn" onclick="nextStep()" disabled>
+                            Continue
+                            <i data-feather="arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/prototype.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        let currentStep = 1;
+        let selectedSource = null;
+        const totalSteps = 4;
+
+        // Initialize wizard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStepIndicators();
+
+            // Check for URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const source = urlParams.get('source');
+            if (source) {
+                selectedSource = source;
+                const sourceCard = document.querySelector(`[data-source="${source}"]`);
+                if (sourceCard) {
+                    selectSource(source, sourceCard);
+                }
+            }
+        });
+
+        function selectSource(source, element) {
+            selectedSource = source;
+
+            // Update visual selection
+            document.querySelectorAll('.source-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+
+            // Enable next button
+            document.getElementById('next-btn').disabled = false;
+
+            // Update step 2 content based on selection
+            updateStep2Content(source);
+
+            window.PrototypeApp.showNotification(`${source} selected. Click Continue to proceed.`, 'info');
+        }
+
+        function updateStep2Content(source) {
+            const sourceData = {
+                sap: {
+                    name: 'SAP ERP',
+                    icon: 'server',
+                    iconClass: 'sap',
+                    description: 'Enter your SAP connection details. We\'ll connect securely to your ERP system.'
+                },
+                quickbooks: {
+                    name: 'QuickBooks',
+                    icon: 'key',
+                    iconClass: 'quickbooks',
+                    description: 'Enter your QuickBooks connection details. We use secure, encrypted connections to protect your data.'
+                },
+                bamboohr: {
+                    name: 'Bamboo HR',
+                    icon: 'users',
+                    iconClass: 'bamboohr',
+                    description: 'Connect to your Bamboo HR account to import employee and payroll data.'
+                },
+                salesforce: {
+                    name: 'Salesforce',
+                    icon: 'cloud',
+                    iconClass: 'salesforce',
+                    description: 'Connect to your Salesforce CRM to import customer and sales data.'
+                }
+            };
+
+            const data = sourceData[source];
+            if (data) {
+                document.getElementById('step-2-title').textContent = `Connect to ${data.name}`;
+                document.getElementById('step-2-description').textContent = data.description;
+                document.getElementById('step-2-icon').className = `step-icon ${data.iconClass}`;
+                document.getElementById('step-2-icon').innerHTML = `<i data-feather="${data.icon}"></i>`;
+
+                document.getElementById('step-3-icon').className = `step-icon ${data.iconClass}`;
+
+                feather.replace();
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                // Validate current step
+                if (!validateCurrentStep()) {
+                    return;
+                }
+
+                currentStep++;
+                updateWizardDisplay();
+
+                // Special handling for certain steps
+                if (currentStep === 3) {
+                    // Reset test connection state
+                    document.getElementById('test-result').style.display = 'none';
+                    document.getElementById('next-btn').disabled = true;
+                }
+
+                if (currentStep === 4) {
+                    // Animate success counters
+                    setTimeout(() => {
+                        const counters = document.querySelectorAll('[data-counter]');
+                        counters.forEach(counter => {
+                            const target = parseInt(counter.getAttribute('data-counter'));
+                            window.PrototypeApp.animateCounter(counter, target);
+                        });
+                    }, 500);
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateWizardDisplay();
+            }
+        }
+
+        function updateWizardDisplay() {
+            // Hide all step contents
+            document.querySelectorAll('.step-content').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // Show current step
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+
+            // Update step indicators
+            updateStepIndicators();
+
+            // Update action buttons
+            updateActionButtons();
+        }
+
+        function updateStepIndicators() {
+            const progressLine = document.querySelector('.step-progress-line');
+            const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            progressLine.style.width = `${progressPercent}%`;
+
+            document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+                const stepNum = index + 1;
+                indicator.classList.remove('completed', 'active', 'pending');
+
+                if (stepNum < currentStep) {
+                    indicator.classList.add('completed');
+                    indicator.innerHTML = '<i data-feather="check" style="width: 16px; height: 16px;"></i>';
+                } else if (stepNum === currentStep) {
+                    indicator.classList.add('active');
+                    indicator.textContent = stepNum;
+                } else {
+                    indicator.classList.add('pending');
+                    indicator.textContent = stepNum;
+                }
+            });
+
+            document.querySelectorAll('.step-label').forEach((label, index) => {
+                const stepNum = index + 1;
+                label.classList.remove('completed', 'active');
+
+                if (stepNum < currentStep) {
+                    label.classList.add('completed');
+                } else if (stepNum === currentStep) {
+                    label.classList.add('active');
+                }
+            });
+
+            feather.replace();
+        }
+
+        function updateActionButtons() {
+            const backBtn = document.getElementById('back-btn');
+            const nextBtn = document.getElementById('next-btn');
+
+            // Back button
+            if (currentStep === 1) {
+                backBtn.style.display = 'none';
+            } else {
+                backBtn.style.display = 'flex';
+            }
+
+            // Next button
+            if (currentStep === totalSteps) {
+                nextBtn.style.display = 'none';
+            } else {
+                nextBtn.style.display = 'flex';
+                nextBtn.disabled = !canProceedFromCurrentStep();
+            }
+        }
+
+        function validateCurrentStep() {
+            switch (currentStep) {
+                case 1:
+                    return selectedSource !== null;
+                case 2:
+                    return validateForm();
+                case 3:
+                    return document.getElementById('test-result').style.display === 'block';
+                default:
+                    return true;
+            }
+        }
+
+        function canProceedFromCurrentStep() {
+            switch (currentStep) {
+                case 1:
+                    return selectedSource !== null;
+                case 2:
+                    return true; // Allow proceeding to test step
+                case 3:
+                    return document.getElementById('test-result').style.display === 'block';
+                default:
+                    return true;
+            }
+        }
+
+        function validateForm() {
+            const form = document.getElementById('connection-form');
+            const requiredInputs = form.querySelectorAll('[required]');
+
+            for (let input of requiredInputs) {
+                if (!input.value.trim()) {
+                    window.PrototypeApp.showNotification('Please fill in all required fields', 'error');
+                    input.focus();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function testConnection() {
+            const testBtn = document.getElementById('test-connection-btn');
+            const testResult = document.getElementById('test-result');
+
+            // Show testing state
+            testBtn.disabled = true;
+            testBtn.innerHTML = '<i data-feather="loader" style="width: 16px; height: 16px; animation: spin 1s linear infinite;"></i> Testing...';
+            testResult.style.display = 'flex';
+            testResult.className = 'test-result testing';
+            testResult.innerHTML = '<i data-feather="loader" style="animation: spin 1s linear infinite;"></i> Testing connection...';
+
+            feather.replace();
+
+            // Simulate connection test
+            setTimeout(() => {
+                testResult.className = 'test-result success';
+                testResult.innerHTML = '<i data-feather="check-circle"></i> Connection successful!';
+
+                testBtn.disabled = false;
+                testBtn.innerHTML = '<i data-feather="check-circle"></i> Connection Tested';
+                testBtn.classList.remove('btn-primary');
+                testBtn.classList.add('btn-success');
+
+                document.getElementById('next-btn').disabled = false;
+
+                feather.replace();
+                window.PrototypeApp.showNotification('Connection test successful! You can proceed to complete the setup.', 'success');
+            }, 3000);
+        }
+
+        // Auto-fill demo credentials when form is focused
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('#connection-form input');
+            inputs.forEach((input, index) => {
+                input.addEventListener('focus', function() {
+                    if (!this.value) {
+                        setTimeout(() => {
+                            switch(this.type) {
+                                case 'text':
+                                    if (this.placeholder.includes('Company ID')) {
+                                        this.value = 'DEMO123';
+                                    } else if (this.placeholder.includes('username')) {
+                                        this.value = 'demo_user@company.com';
+                                    }
+                                    break;
+                                case 'password':
+                                    this.value = '••••••••';
+                                    break;
+                            }
+                        }, 300);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Billing Management - DataFlow Analytics Platform">
+    <title>Billing Management - DataFlow Analytics</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/logos/favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Billing Management Specific Styles */
+        .billing-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .revenue-card {
+            background: linear-gradient(135deg, var(--color-success) 0%, #73d13d 100%);
+            color: var(--text-white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .revenue-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .revenue-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .revenue-amount {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .revenue-label {
+            font-size: var(--font-size-base);
+            opacity: 0.9;
+            margin: 0 0 var(--space-4) 0;
+        }
+
+        .revenue-growth {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .billing-metric {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-base);
+        }
+
+        .billing-metric:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-3);
+            color: var(--text-white);
+        }
+
+        .metric-icon.mrr {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);
+        }
+
+        .metric-icon.arr {
+            background: linear-gradient(135deg, var(--color-warning) 0%, #ffc53d 100%);
+        }
+
+        .metric-icon.churn {
+            background: linear-gradient(135deg, var(--color-error) 0%, #ff7875 100%);
+        }
+
+        .billing-main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .billing-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-5);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .section-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .revenue-chart {
+            height: 300px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--color-gray-100) 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .revenue-chart::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(135deg, var(--color-success-light) 0%, var(--color-primary-light) 100%);
+            opacity: 0.4;
+            clip-path: polygon(0 100%, 10% 85%, 20% 90%, 30% 70%, 40% 75%, 50% 60%, 60% 65%, 70% 50%, 80% 55%, 90% 40%, 100% 45%, 100% 100%);
+        }
+
+        .chart-overlay {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .subscription-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .subscription-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-4);
+            border-bottom: 1px solid var(--border-secondary);
+            transition: var(--transition-base);
+        }
+
+        .subscription-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .subscription-item:last-child {
+            border-bottom: none;
+        }
+
+        .subscription-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .subscription-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-sm);
+        }
+
+        .subscription-details {
+            flex: 1;
+        }
+
+        .subscription-name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .subscription-plan {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .subscription-amount {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            text-align: right;
+        }
+
+        .billing-table-container {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-6);
+        }
+
+        .billing-table-header {
+            padding: var(--space-5) var(--space-6);
+            border-bottom: 1px solid var(--border-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+        }
+
+        .billing-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .billing-table th {
+            background: var(--bg-tertiary);
+            padding: var(--space-4) var(--space-6);
+            text-align: left;
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .billing-table td {
+            padding: var(--space-4) var(--space-6);
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .billing-table tbody tr:hover {
+            background: var(--bg-hover);
+        }
+
+        .plan-badge {
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            text-transform: uppercase;
+        }
+
+        .plan-badge.enterprise {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-white);
+        }
+
+        .plan-badge.professional {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+        }
+
+        .plan-badge.starter {
+            background: var(--color-warning-light);
+            color: var(--color-warning);
+        }
+
+        .payment-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-sm);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.paid {
+            background: var(--color-success);
+        }
+
+        .status-dot.pending {
+            background: var(--color-warning);
+        }
+
+        .status-dot.overdue {
+            background: var(--color-error);
+        }
+
+        .usage-analytics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+            margin-top: var(--space-6);
+        }
+
+        .usage-metric {
+            background: var(--bg-secondary);
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .usage-value {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .usage-label {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .billing-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .action-btn {
+            padding: var(--space-1) var(--space-3);
+            font-size: var(--font-size-xs);
+            border: 1px solid var(--border-primary);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .action-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .action-btn.primary {
+            background: var(--color-primary);
+            color: var(--text-white);
+            border-color: var(--color-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .billing-main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .billing-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .billing-table-container {
+                overflow-x: auto;
+            }
+
+            .usage-analytics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <nav class="admin-nav">
+                <div class="admin-nav-logo">
+                    <h1>DataFlow</h1>
+                    <div class="subtitle">Admin Portal</div>
+                </div>
+
+                <a href="dashboard.html" class="admin-nav-item">
+                    <i data-feather="home" class="icon"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+
+                <a href="tenants.html" class="admin-nav-item">
+                    <i data-feather="users" class="icon"></i>
+                    <span class="text">Tenants</span>
+                </a>
+
+                <a href="billing.html" class="admin-nav-item active">
+                    <i data-feather="credit-card" class="icon"></i>
+                    <span class="text">Billing</span>
+                </a>
+
+                <a href="fabric-provisioning.html" class="admin-nav-item">
+                    <i data-feather="database" class="icon"></i>
+                    <span class="text">Fabric</span>
+                </a>
+
+                <a href="notifications.html" class="admin-nav-item">
+                    <i data-feather="bell" class="icon"></i>
+                    <span class="text">Notifications</span>
+                </a>
+
+                <a href="#" class="admin-nav-item">
+                    <i data-feather="settings" class="icon"></i>
+                    <span class="text">Settings</span>
+                </a>
+
+                <a href="#" class="admin-nav-item">
+                    <i data-feather="help-circle" class="icon"></i>
+                    <span class="text">Support</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <button class="admin-sidebar-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+
+                    <div class="admin-breadcrumb">
+                        <span class="admin-breadcrumb-item">Admin</span>
+                        <span class="admin-breadcrumb-separator">/</span>
+                        <span class="admin-breadcrumb-item current">Billing Management</span>
+                    </div>
+                </div>
+
+                <div class="admin-header-right">
+                    <button class="admin-notification-bell">
+                        <i data-feather="bell"></i>
+                        <span class="admin-notification-badge">3</span>
+                    </button>
+
+                    <div class="admin-user-menu">
+                        <div class="admin-user-avatar">AS</div>
+                        <div class="admin-user-info">
+                            <div class="admin-user-name">Admin User</div>
+                            <div class="admin-user-role">System Admin</div>
+                        </div>
+                        <i data-feather="chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="admin-content">
+                <!-- Revenue Overview -->
+                <div class="billing-overview">
+                    <div class="revenue-card">
+                        <div class="revenue-content">
+                            <div class="revenue-amount" data-counter="47200">$0</div>
+                            <div class="revenue-label">Monthly Recurring Revenue</div>
+                            <div class="revenue-growth">
+                                <i data-feather="trending-up" style="width: 16px; height: 16px;"></i>
+                                +12.3% from last month
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="billing-metric">
+                        <div class="metric-icon arr">
+                            <i data-feather="bar-chart-2"></i>
+                        </div>
+                        <div class="stat-value" data-counter="566400">$0</div>
+                        <div class="stat-label">Annual Recurring Revenue</div>
+                    </div>
+
+                    <div class="billing-metric">
+                        <div class="metric-icon churn">
+                            <i data-feather="users"></i>
+                        </div>
+                        <div class="stat-value">2.4%</div>
+                        <div class="stat-label">Monthly Churn Rate</div>
+                    </div>
+
+                    <div class="billing-metric">
+                        <div class="metric-icon mrr">
+                            <i data-feather="dollar-sign"></i>
+                        </div>
+                        <div class="stat-value" data-counter="1967">$0</div>
+                        <div class="stat-label">Avg Revenue Per User</div>
+                    </div>
+                </div>
+
+                <!-- Main Billing Grid -->
+                <div class="billing-main-grid">
+                    <!-- Revenue Analytics -->
+                    <div class="billing-section">
+                        <div class="section-header">
+                            <h3 class="section-title">Revenue Analytics</h3>
+                            <div class="admin-section-actions">
+                                <button class="dashboard-action-btn">Last 12 months</button>
+                                <button class="dashboard-action-btn">Export Report</button>
+                            </div>
+                        </div>
+
+                        <div class="revenue-chart">
+                            <div class="chart-overlay">
+                                <i data-feather="trending-up" style="width: 48px; height: 48px; margin-bottom: 12px;"></i>
+                                <div>Revenue Growth Chart</div>
+                                <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Interactive revenue analytics would be rendered here</div>
+                            </div>
+                        </div>
+
+                        <div class="usage-analytics">
+                            <div class="usage-metric">
+                                <div class="usage-value" data-counter="89">0%</div>
+                                <div class="usage-label">Collection Rate</div>
+                            </div>
+                            <div class="usage-metric">
+                                <div class="usage-value" data-counter="7">0</div>
+                                <div class="usage-label">Avg Days to Pay</div>
+                            </div>
+                            <div class="usage-metric">
+                                <div class="usage-value" data-counter="156">$0</div>
+                                <div class="usage-label">Avg Invoice Amount</div>
+                            </div>
+                            <div class="usage-metric">
+                                <div class="usage-value" data-counter="94">0%</div>
+                                <div class="usage-label">Payment Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Subscriptions -->
+                    <div class="billing-section">
+                        <div class="section-header">
+                            <h3 class="section-title">Active Subscriptions</h3>
+                            <button class="dashboard-action-btn">View All</button>
+                        </div>
+
+                        <div class="subscription-list">
+                            <div class="subscription-item">
+                                <div class="subscription-info">
+                                    <div class="subscription-avatar">AC</div>
+                                    <div class="subscription-details">
+                                        <div class="subscription-name">Acme Corporation</div>
+                                        <div class="subscription-plan">Enterprise Plan • 150 users</div>
+                                    </div>
+                                </div>
+                                <div class="subscription-amount">$2,999/mo</div>
+                            </div>
+
+                            <div class="subscription-item">
+                                <div class="subscription-info">
+                                    <div class="subscription-avatar">TS</div>
+                                    <div class="subscription-details">
+                                        <div class="subscription-name">TechStart Inc</div>
+                                        <div class="subscription-plan">Professional • 45 users</div>
+                                    </div>
+                                </div>
+                                <div class="subscription-amount">$899/mo</div>
+                            </div>
+
+                            <div class="subscription-item">
+                                <div class="subscription-info">
+                                    <div class="subscription-avatar">GS</div>
+                                    <div class="subscription-details">
+                                        <div class="subscription-name">Global Solutions</div>
+                                        <div class="subscription-plan">Enterprise • 200 users</div>
+                                    </div>
+                                </div>
+                                <div class="subscription-amount">$3,999/mo</div>
+                            </div>
+
+                            <div class="subscription-item">
+                                <div class="subscription-info">
+                                    <div class="subscription-avatar">SC</div>
+                                    <div class="subscription-details">
+                                        <div class="subscription-name">StartupCo</div>
+                                        <div class="subscription-plan">Starter • 12 users</div>
+                                    </div>
+                                </div>
+                                <div class="subscription-amount">$299/mo</div>
+                            </div>
+
+                            <div class="subscription-item">
+                                <div class="subscription-info">
+                                    <div class="subscription-avatar">IT</div>
+                                    <div class="subscription-details">
+                                        <div class="subscription-name">InnovateTech</div>
+                                        <div class="subscription-plan">Professional • 78 users</div>
+                                    </div>
+                                </div>
+                                <div class="subscription-amount">$1,299/mo</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Invoices -->
+                <div class="billing-table-container">
+                    <div class="billing-table-header">
+                        <h3 class="table-title">Recent Invoices</h3>
+                        <div class="table-actions">
+                            <button class="dashboard-action-btn">Generate Invoice</button>
+                            <button class="dashboard-action-btn">Export All</button>
+                        </div>
+                    </div>
+
+                    <table class="billing-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Tenant</th>
+                                <th>Plan</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#INV-2024-0156</td>
+                                <td>Acme Corporation</td>
+                                <td><span class="plan-badge enterprise">Enterprise</span></td>
+                                <td>$2,999.00</td>
+                                <td>
+                                    <div class="payment-status">
+                                        <span class="status-dot paid"></span>
+                                        Paid
+                                    </div>
+                                </td>
+                                <td>Dec 1, 2024</td>
+                                <td>
+                                    <div class="billing-actions">
+                                        <button class="action-btn">View</button>
+                                        <button class="action-btn">Download</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#INV-2024-0155</td>
+                                <td>TechStart Inc</td>
+                                <td><span class="plan-badge professional">Professional</span></td>
+                                <td>$899.00</td>
+                                <td>
+                                    <div class="payment-status">
+                                        <span class="status-dot paid"></span>
+                                        Paid
+                                    </div>
+                                </td>
+                                <td>Nov 28, 2024</td>
+                                <td>
+                                    <div class="billing-actions">
+                                        <button class="action-btn">View</button>
+                                        <button class="action-btn">Download</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#INV-2024-0154</td>
+                                <td>Global Solutions</td>
+                                <td><span class="plan-badge enterprise">Enterprise</span></td>
+                                <td>$3,999.00</td>
+                                <td>
+                                    <div class="payment-status">
+                                        <span class="status-dot pending"></span>
+                                        Processing
+                                    </div>
+                                </td>
+                                <td>Nov 25, 2024</td>
+                                <td>
+                                    <div class="billing-actions">
+                                        <button class="action-btn">View</button>
+                                        <button class="action-btn primary">Follow Up</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#INV-2024-0153</td>
+                                <td>StartupCo</td>
+                                <td><span class="plan-badge starter">Starter</span></td>
+                                <td>$299.00</td>
+                                <td>
+                                    <div class="payment-status">
+                                        <span class="status-dot paid"></span>
+                                        Paid
+                                    </div>
+                                </td>
+                                <td>Nov 20, 2024</td>
+                                <td>
+                                    <div class="billing-actions">
+                                        <button class="action-btn">View</button>
+                                        <button class="action-btn">Download</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#INV-2024-0152</td>
+                                <td>InnovateTech</td>
+                                <td><span class="plan-badge professional">Professional</span></td>
+                                <td>$1,299.00</td>
+                                <td>
+                                    <div class="payment-status">
+                                        <span class="status-dot overdue"></span>
+                                        Overdue
+                                    </div>
+                                </td>
+                                <td>Nov 15, 2024</td>
+                                <td>
+                                    <div class="billing-actions">
+                                        <button class="action-btn">View</button>
+                                        <button class="action-btn primary">Send Reminder</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/prototype.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            animateCounters();
+            setupBillingActions();
+        });
+
+        function animateCounters() {
+            setTimeout(() => {
+                const counters = document.querySelectorAll('[data-counter]');
+                counters.forEach(counter => {
+                    const target = parseInt(counter.getAttribute('data-counter'));
+                    window.PrototypeApp.animateCounter(counter, target);
+                });
+            }, 500);
+        }
+
+        function setupBillingActions() {
+            // Invoice actions
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    const row = this.closest('tr');
+                    const invoice = row.querySelector('td').textContent;
+                    const tenant = row.querySelector('td:nth-child(2)').textContent;
+
+                    switch(action) {
+                        case 'View':
+                            window.PrototypeApp.showNotification(`Opening ${invoice} for ${tenant}`, 'info');
+                            break;
+                        case 'Download':
+                            window.PrototypeApp.showNotification(`Downloading ${invoice} PDF`, 'success');
+                            break;
+                        case 'Follow Up':
+                            window.PrototypeApp.showNotification(`Sending payment follow-up to ${tenant}`, 'info');
+                            break;
+                        case 'Send Reminder':
+                            window.PrototypeApp.showNotification(`Payment reminder sent to ${tenant}`, 'warning');
+                            break;
+                    }
+                });
+            });
+
+            // Subscription items
+            document.querySelectorAll('.subscription-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const tenantName = this.querySelector('.subscription-name').textContent;
+                    window.PrototypeApp.showNotification(`Opening billing details for ${tenantName}`, 'info');
+                });
+            });
+
+            // Header actions
+            document.querySelectorAll('.dashboard-action-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    window.PrototypeApp.showNotification(`${action} functionality`, 'info');
+                });
+            });
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            if (Math.random() > 0.98) {
+                const pendingItems = document.querySelectorAll('.status-dot.pending');
+                if (pendingItems.length > 0) {
+                    const item = pendingItems[0];
+                    const statusText = item.nextElementSibling;
+
+                    item.classList.remove('pending');
+                    item.classList.add('paid');
+                    statusText.textContent = 'Paid';
+
+                    window.PrototypeApp.showNotification('Payment received! Invoice updated to paid status.', 'success');
+                }
+            }
+        }, 8000);
+    </script>
+</body>
+</html>

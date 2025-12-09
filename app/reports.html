@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Report Builder - DataFlow Analytics Platform">
+    <title>Report Builder - DataFlow Analytics</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/logos/favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/app.css">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Report Builder Specific Styles */
+        .reports-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-white);
+            padding: var(--space-8) var(--space-6);
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-8);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .reports-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-4);
+            backdrop-filter: blur(10px);
+            font-size: 2rem;
+        }
+
+        .hero-title {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            margin: 0 0 var(--space-3) 0;
+        }
+
+        .hero-subtitle {
+            font-size: var(--font-size-lg);
+            opacity: 0.9;
+            margin: 0 0 var(--space-6) 0;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .report-builder-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: var(--space-6);
+            height: calc(100vh - 400px);
+            min-height: 600px;
+        }
+
+        .builder-sidebar {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .sidebar-title {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-4) 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .data-sources {
+            display: grid;
+            gap: var(--space-3);
+        }
+
+        .data-source {
+            padding: var(--space-3);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .data-source:hover {
+            border-color: var(--color-primary);
+            background: var(--bg-hover);
+        }
+
+        .data-source.active {
+            border-color: var(--color-success);
+            background: var(--color-success-light);
+        }
+
+        .source-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-2);
+        }
+
+        .source-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .source-icon.quickbooks {
+            background: linear-gradient(135deg, #0077c5 0%, #00a4e4 100%);
+        }
+
+        .source-icon.bamboohr {
+            background: linear-gradient(135deg, #6cc04a 0%, #8bc34a 100%);
+        }
+
+        .source-name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .source-fields {
+            display: grid;
+            gap: var(--space-2);
+            margin-top: var(--space-2);
+        }
+
+        .field-item {
+            padding: var(--space-2);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-xs);
+            color: var(--text-primary);
+            cursor: grab;
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .field-item:hover {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+
+        .field-item:active {
+            cursor: grabbing;
+        }
+
+        .field-type {
+            width: 16px;
+            height: 16px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--text-white);
+            font-weight: var(--font-weight-bold);
+            flex-shrink: 0;
+        }
+
+        .field-type.text {
+            background: var(--color-info);
+        }
+
+        .field-type.number {
+            background: var(--color-success);
+        }
+
+        .field-type.date {
+            background: var(--color-warning);
+        }
+
+        .field-type.currency {
+            background: var(--color-primary);
+        }
+
+        .chart-types {
+            display: grid;
+            gap: var(--space-3);
+        }
+
+        .chart-type {
+            padding: var(--space-3);
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-base);
+            text-align: center;
+        }
+
+        .chart-type:hover {
+            border-color: var(--color-primary);
+            background: var(--bg-hover);
+        }
+
+        .chart-type.selected {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+
+        .chart-icon {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto var(--space-2);
+            background: var(--color-primary);
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+        }
+
+        .chart-name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .report-canvas {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-4) var(--space-6);
+            border-bottom: 1px solid var(--border-secondary);
+            background: var(--bg-secondary);
+        }
+
+        .canvas-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .canvas-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .canvas-btn {
+            padding: var(--space-2) var(--space-3);
+            font-size: var(--font-size-sm);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .canvas-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .canvas-btn.primary {
+            background: var(--color-primary);
+            color: var(--text-white);
+            border-color: var(--color-primary);
+        }
+
+        .canvas-btn.primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .canvas-content {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+        }
+
+        .drop-zone {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-secondary);
+            max-width: 400px;
+        }
+
+        .drop-zone.active {
+            display: none;
+        }
+
+        .drop-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-4);
+            color: var(--text-tertiary);
+            font-size: 2rem;
+        }
+
+        .drop-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-medium);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .drop-description {
+            font-size: var(--font-size-base);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .report-preview {
+            padding: var(--space-6);
+            background: var(--bg-primary);
+            display: none;
+        }
+
+        .report-preview.active {
+            display: block;
+        }
+
+        .preview-chart {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--color-gray-100) 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: var(--space-6);
+        }
+
+        .preview-chart.bar-chart::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            width: 80%;
+            height: 60%;
+            background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-success-light) 100%);
+            opacity: 0.6;
+            clip-path: polygon(0 100%, 10% 70%, 20% 85%, 30% 60%, 40% 75%, 50% 45%, 60% 55%, 70% 30%, 80% 40%, 90% 25%, 100% 35%, 100% 100%);
+        }
+
+        .preview-chart.line-chart::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--color-primary);
+            transform: translateY(-50%);
+            clip-path: polygon(0 50%, 10% 80%, 20% 60%, 30% 70%, 40% 40%, 50% 30%, 60% 60%, 70% 20%, 80% 40%, 90% 10%, 100% 30%);
+        }
+
+        .preview-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-4) 0;
+        }
+
+        .preview-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .preview-stat {
+            background: var(--bg-secondary);
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: var(--space-1) 0 0 0;
+        }
+
+        .report-properties {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            overflow-y: auto;
+        }
+
+        .properties-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .properties-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .properties-title {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-4) 0;
+        }
+
+        .template-grid {
+            display: grid;
+            gap: var(--space-4);
+        }
+
+        .template-card {
+            border: 2px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .template-card:hover {
+            border-color: var(--color-primary);
+            background: var(--bg-hover);
+        }
+
+        .template-card.selected {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+
+        .template-preview {
+            width: 100%;
+            height: 80px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+        }
+
+        .template-name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .template-description {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .export-options {
+            display: grid;
+            gap: var(--space-3);
+        }
+
+        .export-option {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .export-option:hover {
+            border-color: var(--color-primary);
+            background: var(--bg-hover);
+        }
+
+        .export-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+            flex-shrink: 0;
+        }
+
+        .export-icon.pdf {
+            background: var(--color-error);
+        }
+
+        .export-icon.excel {
+            background: var(--color-success);
+        }
+
+        .export-icon.powerpoint {
+            background: var(--color-warning);
+        }
+
+        .export-info {
+            flex: 1;
+        }
+
+        .export-name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .export-description {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1400px) {
+            .report-builder-layout {
+                grid-template-columns: 250px 1fr 280px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .report-builder-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .builder-sidebar,
+            .report-properties {
+                order: 2;
+            }
+
+            .report-canvas {
+                order: 1;
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .canvas-header {
+                flex-direction: column;
+                gap: var(--space-3);
+            }
+
+            .template-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <nav class="app-nav">
+                <div class="app-nav-logo">
+                    <h1>DataFlow</h1>
+                    <div class="subtitle">Analytics Platform</div>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Main</div>
+                    <a href="dashboard.html" class="app-nav-item">
+                        <i data-feather="home" class="icon"></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+
+                    <a href="ai-insights.html" class="app-nav-item">
+                        <i data-feather="zap" class="icon"></i>
+                        <span class="text">AI Insights</span>
+                        <span class="badge badge-success">3</span>
+                    </a>
+
+                    <a href="reports.html" class="app-nav-item active">
+                        <i data-feather="bar-chart-2" class="icon"></i>
+                        <span class="text">Reports</span>
+                    </a>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Data</div>
+                    <a href="data-connections.html" class="app-nav-item">
+                        <i data-feather="database" class="icon"></i>
+                        <span class="text">Data Sources</span>
+                    </a>
+
+                    <a href="connector-wizard.html" class="app-nav-item">
+                        <i data-feather="link" class="icon"></i>
+                        <span class="text">Connect New</span>
+                    </a>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Account</div>
+                    <a href="settings.html" class="app-nav-item">
+                        <i data-feather="settings" class="icon"></i>
+                        <span class="text">Settings</span>
+                    </a>
+
+                    <a href="#" class="app-nav-item">
+                        <i data-feather="help-circle" class="icon"></i>
+                        <span class="text">Help & Support</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="app-header-left">
+                    <button class="app-sidebar-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+
+                    <div class="app-welcome">
+                        <div class="app-welcome-message">Report Builder</div>
+                        <div class="app-welcome-time">Create beautiful reports in minutes</div>
+                    </div>
+                </div>
+
+                <div class="app-header-right">
+                    <div class="app-user-menu">
+                        <div class="app-user-avatar">SC</div>
+                        <div class="app-user-info">
+                            <div class="app-user-name">Sarah Chen</div>
+                            <div class="app-user-status">Online</div>
+                        </div>
+                        <i data-feather="chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="app-content">
+                <!-- Hero Section -->
+                <div class="reports-hero">
+                    <div class="hero-content">
+                        <div class="hero-icon">
+                            📊
+                        </div>
+                        <h1 class="hero-title">Build Your Perfect Report</h1>
+                        <p class="hero-subtitle">
+                            Drag, drop, and customize to create stunning reports from your connected data sources. No coding required!
+                        </p>
+                        <div class="hero-actions">
+                            <button class="btn btn-white btn-lg" onclick="startFromTemplate()">
+                                <i data-feather="file-text" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                                Start from Template
+                            </button>
+                            <button class="btn btn-white-outline btn-lg" onclick="startFromScratch()">
+                                <i data-feather="plus" style="width: 20px; height: 20px; margin-right: 8px;"></i>
+                                Start from Scratch
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Builder -->
+                <div class="report-builder-layout">
+                    <!-- Left Sidebar - Data Sources & Components -->
+                    <div class="builder-sidebar">
+                        <div class="sidebar-section">
+                            <h3 class="sidebar-title">
+                                <i data-feather="database" style="width: 16px; height: 16px;"></i>
+                                Data Sources
+                            </h3>
+                            <div class="data-sources">
+                                <div class="data-source active" onclick="selectDataSource(this, 'quickbooks')">
+                                    <div class="source-header">
+                                        <div class="source-icon quickbooks">QB</div>
+                                        <h4 class="source-name">QuickBooks</h4>
+                                    </div>
+                                    <div class="source-fields">
+                                        <div class="field-item" draggable="true" ondragstart="dragStart(event, 'revenue', 'currency')">
+                                            <div class="field-type currency">$</div>
+                                            <span>Revenue</span>
+                                        </div>
+                                        <div class="field-item" draggable="true" ondragstart="dragStart(event, 'expenses', 'currency')">
+                                            <div class="field-type currency">$</div>
+                                            <span>Expenses</span>
+                                        </div>
+                                        <div class="field-item" draggable="true" ondragstart="dragStart(event, 'profit_margin', 'number')">
+                                            <div class="field-type number">#</div>
+                                            <span>Profit Margin</span>
+                                        </div>
+                                        <div class="field-item" draggable="true" ondragstart="dragStart(event, 'invoice_date', 'date')">
+                                            <div class="field-type date">📅</div>
+                                            <span>Invoice Date</span>
+                                        </div>
+                                        <div class="field-item" draggable="true" ondragstart="dragStart(event, 'customer_name', 'text')">
+                                            <div class="field-type text">T</div>
+                                            <span>Customer Name</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="data-source" onclick="selectDataSource(this, 'bamboohr')">
+                                    <div class="source-header">
+                                        <div class="source-icon bamboohr">HR</div>
+                                        <h4 class="source-name">Bamboo HR</h4>
+                                    </div>
+                                    <div class="source-fields">
+                                        <div class="field-item" draggable="true" ondragstart="dragStart(event, 'employee_count', 'number')">
+                                            <div class="field-type number">#</div>
+                                            <span>Employee Count</span>
+                                        </div>
+                                        <div class="field-item" draggable="true" ondragstart="dragStart(event, 'salary', 'currency')">
+                                            <div class="field-type currency">$</div>
+                                            <span>Salary</span>
+                                        </div>
+                                        <div class="field-item" draggable="true" ondragstart="dragStart(event, 'department', 'text')">
+                                            <div class="field-type text">T</div>
+                                            <span>Department</span>
+                                        </div>
+                                        <div class="field-item" draggable="true" ondragstart="dragStart(event, 'hire_date', 'date')">
+                                            <div class="field-type date">📅</div>
+                                            <span>Hire Date</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <h3 class="sidebar-title">
+                                <i data-feather="pie-chart" style="width: 16px; height: 16px;"></i>
+                                Chart Types
+                            </h3>
+                            <div class="chart-types">
+                                <div class="chart-type" onclick="selectChartType(this, 'bar')">
+                                    <div class="chart-icon">
+                                        <i data-feather="bar-chart-2"></i>
+                                    </div>
+                                    <div class="chart-name">Bar Chart</div>
+                                </div>
+                                <div class="chart-type" onclick="selectChartType(this, 'line')">
+                                    <div class="chart-icon">
+                                        <i data-feather="trending-up"></i>
+                                    </div>
+                                    <div class="chart-name">Line Chart</div>
+                                </div>
+                                <div class="chart-type" onclick="selectChartType(this, 'pie')">
+                                    <div class="chart-icon">
+                                        <i data-feather="pie-chart"></i>
+                                    </div>
+                                    <div class="chart-name">Pie Chart</div>
+                                </div>
+                                <div class="chart-type" onclick="selectChartType(this, 'table')">
+                                    <div class="chart-icon">
+                                        <i data-feather="grid"></i>
+                                    </div>
+                                    <div class="chart-name">Data Table</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Center Canvas -->
+                    <div class="report-canvas">
+                        <div class="canvas-header">
+                            <h2 class="canvas-title">My New Report</h2>
+                            <div class="canvas-actions">
+                                <button class="canvas-btn" onclick="previewReport()">
+                                    <i data-feather="eye" style="width: 14px; height: 14px;"></i>
+                                    Preview
+                                </button>
+                                <button class="canvas-btn" onclick="saveReport()">
+                                    <i data-feather="save" style="width: 14px; height: 14px;"></i>
+                                    Save
+                                </button>
+                                <button class="canvas-btn primary" onclick="exportReport()">
+                                    <i data-feather="download" style="width: 14px; height: 14px;"></i>
+                                    Export
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="canvas-content" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            <div class="drop-zone" id="drop-zone">
+                                <div class="drop-icon">
+                                    <i data-feather="target"></i>
+                                </div>
+                                <h3 class="drop-title">Drop Fields Here</h3>
+                                <p class="drop-description">
+                                    Drag fields from your data sources on the left to start building your report.
+                                    You can also select a chart type and template to get started quickly.
+                                </p>
+                            </div>
+
+                            <div class="report-preview" id="report-preview">
+                                <h3 class="preview-title">Revenue Analysis Report</h3>
+                                <div class="preview-chart bar-chart" id="preview-chart">
+                                    <div style="position: relative; z-index: 1;">
+                                        <i data-feather="bar-chart-2" style="width: 48px; height: 48px; margin-bottom: 12px;"></i>
+                                        <div>Interactive Chart Visualization</div>
+                                        <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Chart will render here with your data</div>
+                                    </div>
+                                </div>
+                                <div class="preview-stats">
+                                    <div class="preview-stat">
+                                        <div class="stat-value" data-counter="47200">$0</div>
+                                        <div class="stat-label">Total Revenue</div>
+                                    </div>
+                                    <div class="preview-stat">
+                                        <div class="stat-value" data-counter="23400">$0</div>
+                                        <div class="stat-label">Total Expenses</div>
+                                    </div>
+                                    <div class="preview-stat">
+                                        <div class="stat-value" data-counter="23800">$0</div>
+                                        <div class="stat-label">Net Profit</div>
+                                    </div>
+                                    <div class="preview-stat">
+                                        <div class="stat-value">50.4%</div>
+                                        <div class="stat-label">Profit Margin</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Sidebar - Properties & Templates -->
+                    <div class="report-properties">
+                        <div class="properties-section">
+                            <h3 class="properties-title">Quick Templates</h3>
+                            <div class="template-grid">
+                                <div class="template-card" onclick="selectTemplate(this, 'financial')">
+                                    <div class="template-preview">
+                                        <i data-feather="dollar-sign"></i>
+                                    </div>
+                                    <h4 class="template-name">Financial Summary</h4>
+                                    <p class="template-description">Revenue, expenses, and profit analysis</p>
+                                </div>
+
+                                <div class="template-card" onclick="selectTemplate(this, 'sales')">
+                                    <div class="template-preview">
+                                        <i data-feather="trending-up"></i>
+                                    </div>
+                                    <h4 class="template-name">Sales Performance</h4>
+                                    <p class="template-description">Sales trends and customer metrics</p>
+                                </div>
+
+                                <div class="template-card" onclick="selectTemplate(this, 'hr')">
+                                    <div class="template-preview">
+                                        <i data-feather="users"></i>
+                                    </div>
+                                    <h4 class="template-name">HR Dashboard</h4>
+                                    <p class="template-description">Employee metrics and payroll data</p>
+                                </div>
+
+                                <div class="template-card" onclick="selectTemplate(this, 'custom')">
+                                    <div class="template-preview">
+                                        <i data-feather="edit-3"></i>
+                                    </div>
+                                    <h4 class="template-name">Custom Report</h4>
+                                    <p class="template-description">Start with a blank canvas</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="properties-section">
+                            <h3 class="properties-title">Report Settings</h3>
+                            <form class="properties-form">
+                                <div class="form-group">
+                                    <label class="form-label">Report Title</label>
+                                    <input type="text" class="form-input" value="My New Report" id="report-title">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Date Range</label>
+                                    <select class="form-input">
+                                        <option value="last30">Last 30 days</option>
+                                        <option value="last90">Last 90 days</option>
+                                        <option value="lastyear">Last year</option>
+                                        <option value="custom">Custom range</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Update Frequency</label>
+                                    <select class="form-input">
+                                        <option value="manual">Manual only</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="properties-section">
+                            <h3 class="properties-title">Export Options</h3>
+                            <div class="export-options">
+                                <div class="export-option" onclick="exportAs('pdf')">
+                                    <div class="export-icon pdf">
+                                        <i data-feather="file-text"></i>
+                                    </div>
+                                    <div class="export-info">
+                                        <div class="export-name">PDF Report</div>
+                                        <div class="export-description">Formatted for printing</div>
+                                    </div>
+                                </div>
+
+                                <div class="export-option" onclick="exportAs('excel')">
+                                    <div class="export-icon excel">
+                                        <i data-feather="file-spreadsheet"></i>
+                                    </div>
+                                    <div class="export-info">
+                                        <div class="export-name">Excel Workbook</div>
+                                        <div class="export-description">Data and charts in Excel</div>
+                                    </div>
+                                </div>
+
+                                <div class="export-option" onclick="exportAs('powerpoint')">
+                                    <div class="export-icon powerpoint">
+                                        <i data-feather="presentation"></i>
+                                    </div>
+                                    <div class="export-info">
+                                        <div class="export-name">PowerPoint</div>
+                                        <div class="export-description">Presentation ready</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/prototype.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        let selectedDataSource = 'quickbooks';
+        let selectedChartType = null;
+        let draggedField = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupReportBuilder();
+        });
+
+        function setupReportBuilder() {
+            // Setup drag and drop functionality
+            setupDragAndDrop();
+
+            // Update report title input
+            const titleInput = document.getElementById('report-title');
+            titleInput.addEventListener('input', function() {
+                document.querySelector('.canvas-title').textContent = this.value;
+            });
+        }
+
+        function setupDragAndDrop() {
+            // Make field items draggable
+            document.querySelectorAll('.field-item').forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    const fieldName = this.querySelector('span').textContent;
+                    const fieldType = this.querySelector('.field-type').textContent;
+                    draggedField = { name: fieldName, type: fieldType };
+                });
+            });
+        }
+
+        function selectDataSource(element, sourceId) {
+            // Update active state
+            document.querySelectorAll('.data-source').forEach(source => {
+                source.classList.remove('active');
+            });
+            element.classList.add('active');
+            selectedDataSource = sourceId;
+
+            window.PrototypeApp.showNotification(`Selected data source: ${sourceId}`, 'info');
+        }
+
+        function selectChartType(element, chartType) {
+            // Update active state
+            document.querySelectorAll('.chart-type').forEach(chart => {
+                chart.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedChartType = chartType;
+
+            // Update preview chart style
+            const previewChart = document.getElementById('preview-chart');
+            previewChart.className = `preview-chart ${chartType}-chart`;
+
+            window.PrototypeApp.showNotification(`Selected chart type: ${chartType}`, 'info');
+        }
+
+        function selectTemplate(element, templateId) {
+            // Update active state
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+
+            // Show preview based on template
+            if (templateId !== 'custom') {
+                showReportPreview();
+
+                // Update title based on template
+                const titleInput = document.getElementById('report-title');
+                const canvasTitle = document.querySelector('.canvas-title');
+
+                switch(templateId) {
+                    case 'financial':
+                        titleInput.value = 'Financial Summary Report';
+                        canvasTitle.textContent = 'Financial Summary Report';
+                        break;
+                    case 'sales':
+                        titleInput.value = 'Sales Performance Report';
+                        canvasTitle.textContent = 'Sales Performance Report';
+                        break;
+                    case 'hr':
+                        titleInput.value = 'HR Dashboard Report';
+                        canvasTitle.textContent = 'HR Dashboard Report';
+                        break;
+                }
+            }
+
+            window.PrototypeApp.showNotification(`Applied template: ${templateId}`, 'success');
+        }
+
+        function dragStart(event, fieldName, fieldType) {
+            draggedField = { name: fieldName, type: fieldType };
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            if (draggedField) {
+                showReportPreview();
+                window.PrototypeApp.showNotification(`Added field: ${draggedField.name}`, 'success');
+                draggedField = null;
+            }
+        }
+
+        function showReportPreview() {
+            const dropZone = document.getElementById('drop-zone');
+            const reportPreview = document.getElementById('report-preview');
+
+            dropZone.classList.add('active');
+            reportPreview.classList.add('active');
+
+            // Animate counters
+            setTimeout(() => {
+                const counters = document.querySelectorAll('[data-counter]');
+                counters.forEach(counter => {
+                    const target = parseInt(counter.getAttribute('data-counter'));
+                    window.PrototypeApp.animateCounter(counter, target);
+                });
+            }, 500);
+        }
+
+        function startFromTemplate() {
+            // Scroll to templates section
+            document.querySelector('.template-grid').scrollIntoView({ behavior: 'smooth' });
+            window.PrototypeApp.showNotification('Choose a template to get started quickly!', 'info');
+        }
+
+        function startFromScratch() {
+            // Clear any selections and show empty canvas
+            document.querySelectorAll('.template-card.selected').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            const dropZone = document.getElementById('drop-zone');
+            const reportPreview = document.getElementById('report-preview');
+
+            dropZone.classList.remove('active');
+            reportPreview.classList.remove('active');
+
+            window.PrototypeApp.showNotification('Drag fields from your data sources to start building!', 'info');
+        }
+
+        function previewReport() {
+            showReportPreview();
+            window.PrototypeApp.showNotification('Showing report preview', 'info');
+        }
+
+        function saveReport() {
+            const reportTitle = document.getElementById('report-title').value;
+            window.PrototypeApp.showNotification(`Report "${reportTitle}" saved successfully`, 'success');
+        }
+
+        function exportReport() {
+            // Show export options
+            document.querySelector('.export-options').scrollIntoView({ behavior: 'smooth' });
+            window.PrototypeApp.showNotification('Choose an export format below', 'info');
+        }
+
+        function exportAs(format) {
+            const reportTitle = document.getElementById('report-title').value;
+            window.PrototypeApp.showNotification(`Exporting "${reportTitle}" as ${format.toUpperCase()}...`, 'success');
+        }
+
+        // Canvas action handlers
+        document.querySelectorAll('.canvas-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Already handled by specific functions
+            });
+        });
+
+        // Form input handlers
+        document.querySelector('.properties-form').addEventListener('change', function(e) {
+            const label = e.target.previousElementSibling.textContent;
+            window.PrototypeApp.showNotification(`Updated: ${label}`, 'info');
+        });
+
+        // Hero action buttons
+        window.startFromTemplate = startFromTemplate;
+        window.startFromScratch = startFromScratch;
+    </script>
+</body>
+</html>

@@ -1,0 +1,585 @@
+/* ============================================================================
+   Mock Chart Visualizations for SaaS Data & Analytics Platform
+   CSS-based charts and data visualizations for prototyping
+   ============================================================================ */
+
+/* ============================================================================
+   Base Chart Styles
+   ============================================================================ */
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  border: 1px solid var(--border-secondary);
+  overflow: hidden;
+}
+
+.chart-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================================
+   Line Charts
+   ============================================================================ */
+
+.line-chart {
+  position: relative;
+  height: 200px;
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--color-gray-100) 100%);
+  border-radius: var(--radius-base);
+  overflow: hidden;
+}
+
+.line-chart::before {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 5%;
+  right: 5%;
+  height: 2px;
+  background: var(--color-primary);
+  clip-path: polygon(
+    0% 50%, 8% 20%, 16% 40%, 24% 15%, 32% 35%, 40% 10%,
+    48% 25%, 56% 5%, 64% 30%, 72% 8%, 80% 20%, 88% 12%, 100% 25%
+  );
+  z-index: 2;
+}
+
+.line-chart::after {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 5%;
+  right: 5%;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(24, 144, 255, 0.2) 0%, transparent 100%);
+  clip-path: polygon(
+    0% 50%, 8% 20%, 16% 40%, 24% 15%, 32% 35%, 40% 10%,
+    48% 25%, 56% 5%, 64% 30%, 72% 8%, 80% 20%, 88% 12%, 100% 25%, 100% 100%, 0% 100%
+  );
+  z-index: 1;
+}
+
+.revenue-line-chart::before {
+  clip-path: polygon(
+    0% 60%, 8% 55%, 16% 50%, 24% 45%, 32% 40%, 40% 35%,
+    48% 30%, 56% 25%, 64% 20%, 72% 15%, 80% 10%, 88% 8%, 100% 5%
+  );
+}
+
+.revenue-line-chart::after {
+  clip-path: polygon(
+    0% 60%, 8% 55%, 16% 50%, 24% 45%, 32% 40%, 40% 35%,
+    48% 30%, 56% 25%, 64% 20%, 72% 15%, 80% 10%, 88% 8%, 100% 5%, 100% 100%, 0% 100%
+  );
+}
+
+/* ============================================================================
+   Bar Charts
+   ============================================================================ */
+
+.bar-chart {
+  display: flex;
+  align-items: end;
+  justify-content: space-around;
+  height: 200px;
+  padding: var(--space-4);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--color-gray-100) 100%);
+  border-radius: var(--radius-base);
+  gap: var(--space-2);
+}
+
+.bar {
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  width: 100%;
+  min-width: 20px;
+  position: relative;
+  transition: var(--transition-base);
+}
+
+.bar:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.bar:nth-child(1) { height: 65%; background: linear-gradient(180deg, #1890ff 0%, #096dd9 100%); }
+.bar:nth-child(2) { height: 80%; background: linear-gradient(180deg, #52c41a 0%, #389e0d 100%); }
+.bar:nth-child(3) { height: 45%; background: linear-gradient(180deg, #faad14 0%, #d48806 100%); }
+.bar:nth-child(4) { height: 70%; background: linear-gradient(180deg, #722ed1 0%, #531dab 100%); }
+.bar:nth-child(5) { height: 55%; background: linear-gradient(180deg, #eb2f96 0%, #c41d7f 100%); }
+.bar:nth-child(6) { height: 90%; background: linear-gradient(180deg, #13c2c2 0%, #08979c 100%); }
+
+.revenue-bar-chart .bar:nth-child(1) { height: 45%; }
+.revenue-bar-chart .bar:nth-child(2) { height: 52%; }
+.revenue-bar-chart .bar:nth-child(3) { height: 58%; }
+.revenue-bar-chart .bar:nth-child(4) { height: 48%; }
+.revenue-bar-chart .bar:nth-child(5) { height: 62%; }
+.revenue-bar-chart .bar:nth-child(6) { height: 68%; }
+.revenue-bar-chart .bar:nth-child(7) { height: 72%; }
+.revenue-bar-chart .bar:nth-child(8) { height: 65%; }
+.revenue-bar-chart .bar:nth-child(9) { height: 75%; }
+.revenue-bar-chart .bar:nth-child(10) { height: 82%; }
+.revenue-bar-chart .bar:nth-child(11) { height: 78%; }
+.revenue-bar-chart .bar:nth-child(12) { height: 55%; }
+
+/* ============================================================================
+   Pie Charts
+   ============================================================================ */
+
+.pie-chart {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  margin: 0 auto;
+  background: conic-gradient(
+    var(--color-primary) 0deg 120deg,
+    var(--color-success) 120deg 200deg,
+    var(--color-warning) 200deg 280deg,
+    var(--color-error) 280deg 340deg,
+    var(--color-purple) 340deg 360deg
+  );
+  box-shadow: var(--shadow-md);
+}
+
+.pie-chart::after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  width: 50%;
+  height: 50%;
+  background: var(--bg-primary);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+.department-pie-chart {
+  background: conic-gradient(
+    #1890ff 0deg 90deg,
+    #52c41a 90deg 150deg,
+    #faad14 150deg 200deg,
+    #722ed1 200deg 240deg,
+    #eb2f96 240deg 270deg,
+    #13c2c2 270deg 295deg,
+    #fa541c 295deg 315deg,
+    #2f54eb 315deg 360deg
+  );
+}
+
+.customer-segment-pie {
+  background: conic-gradient(
+    #1890ff 0deg 108deg,
+    #52c41a 108deg 198deg,
+    #faad14 198deg 289deg,
+    #722ed1 289deg 360deg
+  );
+}
+
+/* ============================================================================
+   Donut Charts
+   ============================================================================ */
+
+.donut-chart {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  margin: 0 auto;
+  background: conic-gradient(
+    var(--color-success) 0deg 250deg,
+    var(--color-warning) 250deg 310deg,
+    var(--color-error) 310deg 360deg
+  );
+}
+
+.donut-chart::after {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 30%;
+  width: 40%;
+  height: 40%;
+  background: var(--bg-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-center-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
+}
+
+.donut-center-value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.donut-center-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ============================================================================
+   Progress Bars and Gauges
+   ============================================================================ */
+
+.progress-chart {
+  position: relative;
+  height: 20px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-success) 0%, var(--color-primary) 100%);
+  border-radius: var(--radius-xl);
+  transition: width 1s ease-in-out;
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.gauge-chart {
+  position: relative;
+  width: 200px;
+  height: 100px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.gauge-chart::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200px;
+  height: 100px;
+  border-radius: 200px 200px 0 0;
+  background: conic-gradient(
+    from 180deg,
+    var(--color-error) 0deg 36deg,
+    var(--color-warning) 36deg 72deg,
+    var(--color-success) 72deg 108deg,
+    var(--color-primary) 108deg 144deg,
+    var(--color-info) 144deg 180deg
+  );
+}
+
+.gauge-chart::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 25px;
+  width: 150px;
+  height: 75px;
+  border-radius: 150px 150px 0 0;
+  background: var(--bg-primary);
+}
+
+.gauge-needle {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  height: 80px;
+  background: var(--text-primary);
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(45deg);
+  z-index: 3;
+}
+
+/* ============================================================================
+   Heatmap Charts
+   ============================================================================ */
+
+.heatmap-chart {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-base);
+}
+
+.heatmap-cell {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  color: var(--text-white);
+  font-weight: var(--font-weight-medium);
+}
+
+.heatmap-cell.low { background: var(--color-success-light); color: var(--color-success); }
+.heatmap-cell.medium { background: var(--color-warning); }
+.heatmap-cell.high { background: var(--color-error); }
+.heatmap-cell.very-high { background: var(--color-purple); }
+
+/* ============================================================================
+   Sparkline Charts
+   ============================================================================ */
+
+.sparkline-chart {
+  width: 100px;
+  height: 30px;
+  position: relative;
+  background: transparent;
+}
+
+.sparkline-chart::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-primary) 20%,
+    transparent 40%,
+    var(--color-success) 60%,
+    transparent 80%,
+    var(--color-warning) 100%
+  );
+  clip-path: polygon(
+    0% 80%, 10% 60%, 20% 70%, 30% 40%, 40% 50%, 50% 30%,
+    60% 40%, 70% 20%, 80% 30%, 90% 10%, 100% 20%, 100% 100%, 0% 100%
+  );
+}
+
+.sparkline-up::before {
+  clip-path: polygon(
+    0% 90%, 10% 85%, 20% 75%, 30% 65%, 40% 55%, 50% 45%,
+    60% 35%, 70% 25%, 80% 15%, 90% 10%, 100% 5%, 100% 100%, 0% 100%
+  );
+  background: linear-gradient(45deg, var(--color-success) 0%, var(--color-primary) 100%);
+}
+
+.sparkline-down::before {
+  clip-path: polygon(
+    0% 10%, 10% 20%, 20% 35%, 30% 45%, 40% 55%, 50% 65%,
+    60% 75%, 70% 80%, 80% 85%, 90% 90%, 100% 95%, 100% 100%, 0% 100%
+  );
+  background: linear-gradient(45deg, var(--color-error) 0%, var(--color-warning) 100%);
+}
+
+/* ============================================================================
+   Area Charts
+   ============================================================================ */
+
+.area-chart {
+  position: relative;
+  height: 200px;
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--color-gray-100) 100%);
+  border-radius: var(--radius-base);
+  overflow: hidden;
+}
+
+.area-chart::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 30%;
+  background: linear-gradient(
+    to bottom,
+    rgba(24, 144, 255, 0.4) 0%,
+    rgba(24, 144, 255, 0.1) 70%,
+    transparent 100%
+  );
+  clip-path: polygon(
+    0% 70%, 8% 60%, 16% 65%, 24% 50%, 32% 55%, 40% 40%,
+    48% 45%, 56% 30%, 64% 35%, 72% 25%, 80% 30%, 88% 20%, 100% 25%, 100% 100%, 0% 100%
+  );
+}
+
+.area-chart::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(82, 196, 26, 0.4) 0%,
+    rgba(82, 196, 26, 0.1) 70%,
+    transparent 100%
+  );
+  clip-path: polygon(
+    0% 80%, 8% 75%, 16% 78%, 24% 70%, 32% 72%, 40% 65%,
+    48% 68%, 56% 60%, 64% 62%, 72% 55%, 80% 58%, 88% 50%, 100% 52%, 100% 100%, 0% 100%
+  );
+}
+
+/* ============================================================================
+   Responsive Chart Adjustments
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .chart-container {
+    height: 250px;
+    padding: var(--space-3);
+  }
+
+  .pie-chart,
+  .donut-chart,
+  .gauge-chart {
+    width: 150px;
+    height: 150px;
+  }
+
+  .gauge-chart::before,
+  .gauge-chart::after {
+    width: 150px;
+    height: 75px;
+  }
+
+  .gauge-chart::after {
+    left: 18px;
+    width: 114px;
+    height: 57px;
+  }
+
+  .bar-chart {
+    padding: var(--space-2);
+    gap: var(--space-1);
+  }
+
+  .heatmap-chart {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .chart-legend {
+    gap: var(--space-2);
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* ============================================================================
+   Animation Classes
+   ============================================================================ */
+
+.chart-animate-in {
+  animation: chartFadeIn 0.8s ease-out;
+}
+
+@keyframes chartFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chart-pulse {
+  animation: chartPulse 2s ease-in-out infinite;
+}
+
+@keyframes chartPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* ============================================================================
+   Interactive Chart States
+   ============================================================================ */
+
+.chart-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition-base);
+}
+
+.chart-loading {
+  position: relative;
+  opacity: 0.7;
+}
+
+.chart-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

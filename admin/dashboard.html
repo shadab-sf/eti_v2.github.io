@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard - DataFlow Analytics Platform">
+    <title>Admin Dashboard - DataFlow Analytics</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/logos/favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Dashboard specific styles */
+        .dashboard-welcome {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);
+            color: var(--text-white);
+            padding: var(--space-6);
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-welcome::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .dashboard-welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .dashboard-welcome h1 {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .dashboard-welcome p {
+            font-size: var(--font-size-base);
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .dashboard-quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+        }
+
+        .quick-stat {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-base);
+            cursor: pointer;
+        }
+
+        .quick-stat:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .quick-stat-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto var(--space-3);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+        }
+
+        .quick-stat-icon.primary { background: var(--color-primary); }
+        .quick-stat-icon.success { background: var(--color-success); }
+        .quick-stat-icon.warning { background: var(--color-warning); }
+        .quick-stat-icon.info { background: var(--color-info); }
+
+        .quick-stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .quick-stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .dashboard-main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .dashboard-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dashboard-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-5);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .dashboard-section-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .dashboard-section-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .dashboard-action-btn {
+            padding: var(--space-1) var(--space-3);
+            font-size: var(--font-size-xs);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            color: var(--text-secondary);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .dashboard-action-btn:hover {
+            background: var(--color-primary-light);
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        /* System Health Indicators */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .health-item {
+            text-align: center;
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            background: var(--bg-secondary);
+            transition: var(--transition-base);
+        }
+
+        .health-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .health-status {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto var(--space-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .health-status.healthy { background: var(--color-success); }
+        .health-status.warning { background: var(--color-warning); }
+        .health-status.critical { background: var(--color-error); }
+
+        .health-label {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: start;
+            gap: var(--space-3);
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+            flex-shrink: 0;
+        }
+
+        .activity-icon.info { background: var(--color-info); }
+        .activity-icon.success { background: var(--color-success); }
+        .activity-icon.warning { background: var(--color-warning); }
+        .activity-icon.error { background: var(--color-error); }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-message {
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .activity-time {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        /* Tenant Overview Table */
+        .tenant-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tenant-table th {
+            background: var(--bg-tertiary);
+            padding: var(--space-3);
+            text-align: left;
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-secondary);
+            text-transform: uppercase;
+        }
+
+        .tenant-table td {
+            padding: var(--space-3);
+            font-size: var(--font-size-sm);
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .tenant-table tbody tr:hover {
+            background: var(--bg-hover);
+        }
+
+        .tenant-name {
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+        }
+
+        .tenant-status {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-xs);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-dot.active { background: var(--color-success); }
+        .status-dot.pending { background: var(--color-warning); }
+        .status-dot.suspended { background: var(--color-error); }
+
+        /* Charts placeholder */
+        .chart-container {
+            height: 200px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--color-gray-100) 100%);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            font-size: var(--font-size-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-success-light) 100%);
+            opacity: 0.3;
+            clip-path: polygon(0 100%, 20% 80%, 40% 85%, 60% 70%, 80% 75%, 100% 60%, 100% 100%);
+        }
+
+        .chart-overlay {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        /* Performance Metrics */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-4);
+            margin-top: var(--space-4);
+        }
+
+        .performance-metric {
+            background: var(--bg-secondary);
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .performance-value {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .performance-label {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .performance-trend {
+            font-size: var(--font-size-xs);
+            margin-top: var(--space-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-1);
+        }
+
+        .performance-trend.up { color: var(--color-success); }
+        .performance-trend.down { color: var(--color-error); }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .dashboard-main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .health-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <nav class="admin-nav">
+                <div class="admin-nav-logo">
+                    <h1>DataFlow</h1>
+                    <div class="subtitle">Admin Portal</div>
+                </div>
+
+                <a href="dashboard.html" class="admin-nav-item active">
+                    <i data-feather="home" class="icon"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+
+                <a href="tenants.html" class="admin-nav-item">
+                    <i data-feather="users" class="icon"></i>
+                    <span class="text">Tenants</span>
+                </a>
+
+                <a href="billing.html" class="admin-nav-item">
+                    <i data-feather="credit-card" class="icon"></i>
+                    <span class="text">Billing</span>
+                </a>
+
+                <a href="fabric-provisioning.html" class="admin-nav-item">
+                    <i data-feather="database" class="icon"></i>
+                    <span class="text">Fabric</span>
+                </a>
+
+                <a href="notifications.html" class="admin-nav-item">
+                    <i data-feather="bell" class="icon"></i>
+                    <span class="text">Notifications</span>
+                </a>
+
+                <a href="#" class="admin-nav-item">
+                    <i data-feather="settings" class="icon"></i>
+                    <span class="text">Settings</span>
+                </a>
+
+                <a href="#" class="admin-nav-item">
+                    <i data-feather="help-circle" class="icon"></i>
+                    <span class="text">Support</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <button class="admin-sidebar-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+
+                    <div class="admin-breadcrumb">
+                        <span class="admin-breadcrumb-item">Admin</span>
+                        <span class="admin-breadcrumb-separator">/</span>
+                        <span class="admin-breadcrumb-item current">Dashboard</span>
+                    </div>
+                </div>
+
+                <div class="admin-header-right">
+                    <button class="admin-notification-bell">
+                        <i data-feather="bell"></i>
+                        <span class="admin-notification-badge">3</span>
+                    </button>
+
+                    <div class="admin-user-menu">
+                        <div class="admin-user-avatar">AS</div>
+                        <div class="admin-user-info">
+                            <div class="admin-user-name">Admin User</div>
+                            <div class="admin-user-role">System Admin</div>
+                        </div>
+                        <i data-feather="chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="admin-content">
+                <!-- Welcome Section -->
+                <div class="dashboard-welcome">
+                    <div class="dashboard-welcome-content">
+                        <h1>Welcome back, Admin!</h1>
+                        <p>Here's what's happening with your DataFlow Analytics platform today.</p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="dashboard-quick-stats">
+                    <div class="quick-stat" onclick="window.location.href='tenants.html'">
+                        <div class="quick-stat-icon primary">
+                            <i data-feather="users"></i>
+                        </div>
+                        <div class="quick-stat-value" data-counter="24">0</div>
+                        <div class="quick-stat-label">Active Tenants</div>
+                    </div>
+
+                    <div class="quick-stat">
+                        <div class="quick-stat-icon success">
+                            <i data-feather="activity"></i>
+                        </div>
+                        <div class="quick-stat-value" data-counter="1847">0</div>
+                        <div class="quick-stat-label">Total Users</div>
+                    </div>
+
+                    <div class="quick-stat" onclick="window.location.href='billing.html'">
+                        <div class="quick-stat-icon info">
+                            <i data-feather="dollar-sign"></i>
+                        </div>
+                        <div class="quick-stat-value">$47.2K</div>
+                        <div class="quick-stat-label">Monthly Revenue</div>
+                    </div>
+
+                    <div class="quick-stat">
+                        <div class="quick-stat-icon warning">
+                            <i data-feather="zap"></i>
+                        </div>
+                        <div class="quick-stat-value" data-counter="98">0</div>
+                        <div class="quick-stat-label">System Health %</div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard Grid -->
+                <div class="dashboard-main-grid">
+                    <!-- Left Column -->
+                    <div>
+                        <!-- Platform Analytics -->
+                        <div class="dashboard-section">
+                            <div class="dashboard-section-header">
+                                <h3 class="dashboard-section-title">
+                                    <i data-feather="trending-up"></i>
+                                    Platform Analytics
+                                </h3>
+                                <div class="dashboard-section-actions">
+                                    <button class="dashboard-action-btn">Last 7 days</button>
+                                    <button class="dashboard-action-btn">Export</button>
+                                </div>
+                            </div>
+
+                            <div class="chart-container">
+                                <div class="chart-overlay">
+                                    <i data-feather="bar-chart-2" style="width: 48px; height: 48px; margin-bottom: 12px;"></i>
+                                    <div>Platform Usage Analytics</div>
+                                    <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Interactive charts would be rendered here</div>
+                                </div>
+                            </div>
+
+                            <div class="performance-grid">
+                                <div class="performance-metric">
+                                    <div class="performance-value" data-counter="89">0</div>
+                                    <div class="performance-label">Data Processing (GB)</div>
+                                    <div class="performance-trend up">
+                                        <i data-feather="arrow-up" style="width: 12px; height: 12px;"></i>
+                                        +12.3%
+                                    </div>
+                                </div>
+
+                                <div class="performance-metric">
+                                    <div class="performance-value" data-counter="156">0</div>
+                                    <div class="performance-label">API Calls (K)</div>
+                                    <div class="performance-trend up">
+                                        <i data-feather="arrow-up" style="width: 12px; height: 12px;"></i>
+                                        +8.7%
+                                    </div>
+                                </div>
+
+                                <div class="performance-metric">
+                                    <div class="performance-value">99.8%</div>
+                                    <div class="performance-label">Uptime</div>
+                                    <div class="performance-trend up">
+                                        <i data-feather="check-circle" style="width: 12px; height: 12px;"></i>
+                                        Excellent
+                                    </div>
+                                </div>
+
+                                <div class="performance-metric">
+                                    <div class="performance-value">127ms</div>
+                                    <div class="performance-label">Avg Response</div>
+                                    <div class="performance-trend down">
+                                        <i data-feather="arrow-down" style="width: 12px; height: 12px;"></i>
+                                        -5.2%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Tenants -->
+                        <div class="dashboard-section" style="margin-top: 24px;">
+                            <div class="dashboard-section-header">
+                                <h3 class="dashboard-section-title">
+                                    <i data-feather="building"></i>
+                                    Recent Tenant Activity
+                                </h3>
+                                <div class="dashboard-section-actions">
+                                    <button class="dashboard-action-btn" onclick="window.location.href='tenants.html'">View All</button>
+                                </div>
+                            </div>
+
+                            <table class="tenant-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tenant Name</th>
+                                        <th>Status</th>
+                                        <th>Users</th>
+                                        <th>Plan</th>
+                                        <th>Last Active</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr onclick="window.location.href='tenants.html'">
+                                        <td class="tenant-name">Acme Corporation</td>
+                                        <td>
+                                            <span class="tenant-status">
+                                                <span class="status-dot active"></span>
+                                                Active
+                                            </span>
+                                        </td>
+                                        <td>150</td>
+                                        <td>Enterprise</td>
+                                        <td>2 hours ago</td>
+                                    </tr>
+                                    <tr onclick="window.location.href='tenants.html'">
+                                        <td class="tenant-name">TechStart Inc</td>
+                                        <td>
+                                            <span class="tenant-status">
+                                                <span class="status-dot active"></span>
+                                                Active
+                                            </span>
+                                        </td>
+                                        <td>45</td>
+                                        <td>Professional</td>
+                                        <td>5 hours ago</td>
+                                    </tr>
+                                    <tr onclick="window.location.href='tenants.html'">
+                                        <td class="tenant-name">Global Solutions</td>
+                                        <td>
+                                            <span class="tenant-status">
+                                                <span class="status-dot pending"></span>
+                                                Pending Setup
+                                            </span>
+                                        </td>
+                                        <td>200</td>
+                                        <td>Enterprise</td>
+                                        <td>1 day ago</td>
+                                    </tr>
+                                    <tr onclick="window.location.href='tenants.html'">
+                                        <td class="tenant-name">StartupCo</td>
+                                        <td>
+                                            <span class="tenant-status">
+                                                <span class="status-dot active"></span>
+                                                Active
+                                            </span>
+                                        </td>
+                                        <td>12</td>
+                                        <td>Starter</td>
+                                        <td>3 days ago</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div>
+                        <!-- System Health -->
+                        <div class="dashboard-section">
+                            <div class="dashboard-section-header">
+                                <h3 class="dashboard-section-title">
+                                    <i data-feather="shield-check"></i>
+                                    System Health
+                                </h3>
+                                <div class="dashboard-section-actions">
+                                    <button class="dashboard-action-btn">Refresh</button>
+                                </div>
+                            </div>
+
+                            <div class="health-grid">
+                                <div class="health-item">
+                                    <div class="health-status healthy">✓</div>
+                                    <div class="health-label">API Gateway</div>
+                                </div>
+                                <div class="health-item">
+                                    <div class="health-status healthy">✓</div>
+                                    <div class="health-label">Database</div>
+                                </div>
+                                <div class="health-item">
+                                    <div class="health-status healthy">✓</div>
+                                    <div class="health-label">Fabric</div>
+                                </div>
+                                <div class="health-item">
+                                    <div class="health-status warning">⚠</div>
+                                    <div class="health-label">Cache</div>
+                                </div>
+                                <div class="health-item">
+                                    <div class="health-status healthy">✓</div>
+                                    <div class="health-label">Auth</div>
+                                </div>
+                                <div class="health-item">
+                                    <div class="health-status healthy">✓</div>
+                                    <div class="health-label">Storage</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Feed -->
+                        <div class="dashboard-section" style="margin-top: 24px;">
+                            <div class="dashboard-section-header">
+                                <h3 class="dashboard-section-title">
+                                    <i data-feather="activity"></i>
+                                    Recent Activity
+                                </h3>
+                                <div class="dashboard-section-actions">
+                                    <button class="dashboard-action-btn" onclick="window.location.href='notifications.html'">View All</button>
+                                </div>
+                            </div>
+
+                            <div class="activity-feed">
+                                <div class="activity-item">
+                                    <div class="activity-icon success">
+                                        <i data-feather="user-plus" style="width: 16px; height: 16px;"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-message">New tenant "Global Solutions" onboarded</div>
+                                        <div class="activity-time">15 minutes ago</div>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="activity-icon info">
+                                        <i data-feather="database" style="width: 16px; height: 16px;"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-message">Fabric workspace provisioned for Acme Corp</div>
+                                        <div class="activity-time">2 hours ago</div>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="activity-icon warning">
+                                        <i data-feather="alert-triangle" style="width: 16px; height: 16px;"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-message">Cache performance degraded - investigating</div>
+                                        <div class="activity-time">3 hours ago</div>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="activity-icon success">
+                                        <i data-feather="check-circle" style="width: 16px; height: 16px;"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-message">Monthly billing cycle completed</div>
+                                        <div class="activity-time">5 hours ago</div>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="activity-icon info">
+                                        <i data-feather="upload" style="width: 16px; height: 16px;"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-message">Platform updated to version 2.1.5</div>
+                                        <div class="activity-time">1 day ago</div>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="activity-icon success">
+                                        <i data-feather="users" style="width: 16px; height: 16px;"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-message">TechStart Inc upgraded to Professional plan</div>
+                                        <div class="activity-time">2 days ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/prototype.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        // Add click handlers for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate counters
+            setTimeout(() => {
+                const counters = document.querySelectorAll('[data-counter]');
+                counters.forEach(counter => {
+                    const target = parseInt(counter.getAttribute('data-counter'));
+                    window.PrototypeApp.animateCounter(counter, target);
+                });
+            }, 500);
+
+            // Add hover effects to tenant rows
+            const tenantRows = document.querySelectorAll('.tenant-table tbody tr');
+            tenantRows.forEach(row => {
+                row.style.cursor = 'pointer';
+            });
+
+            // Simulate real-time updates
+            setInterval(() => {
+                const healthWarning = document.querySelector('.health-status.warning');
+                if (healthWarning && Math.random() > 0.7) {
+                    healthWarning.classList.remove('warning');
+                    healthWarning.classList.add('healthy');
+                    healthWarning.textContent = '✓';
+
+                    window.PrototypeApp.showNotification('Cache performance restored', 'success');
+                }
+            }, 10000);
+
+            // Add notification click handler
+            document.querySelector('.admin-notification-bell').addEventListener('click', () => {
+                window.location.href = 'notifications.html';
+            });
+
+            // Add user menu functionality
+            document.querySelector('.admin-user-menu').addEventListener('click', () => {
+                window.PrototypeApp.showNotification('User menu functionality - Profile, Settings, Logout', 'info');
+            });
+        });
+
+        // Health status refresh functionality
+        function refreshHealthStatus() {
+            const healthItems = document.querySelectorAll('.health-status');
+            healthItems.forEach(item => {
+                item.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    item.style.transform = 'scale(1)';
+                }, 200);
+            });
+            window.PrototypeApp.showNotification('System health status refreshed', 'success');
+        }
+
+        // Add refresh handler to health section
+        document.querySelector('.dashboard-section:has(.health-grid) .dashboard-action-btn').addEventListener('click', refreshHealthStatus);
+    </script>
+</body>
+</html>

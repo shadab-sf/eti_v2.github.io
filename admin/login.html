@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Portal Login - DataFlow Analytics Platform">
+    <title>Admin Portal Login - DataFlow Analytics</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/logos/favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Admin Login Specific Styles */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: var(--space-4);
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .login-branding {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);
+            color: var(--text-white);
+            padding: var(--space-12);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-branding::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .login-branding-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-logo {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-6);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .login-logo-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-4);
+            line-height: 1.2;
+        }
+
+        .login-subtitle {
+            font-size: var(--font-size-base);
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: var(--space-8);
+        }
+
+        .login-features {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--space-4);
+            font-size: var(--font-size-sm);
+        }
+
+        .login-features li::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--space-3);
+            flex-shrink: 0;
+        }
+
+        .login-features .feather {
+            width: 12px;
+            height: 12px;
+            position: absolute;
+        }
+
+        .login-form-section {
+            padding: var(--space-12);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-form-header {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .login-form-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .login-form-subtitle {
+            font-size: var(--font-size-base);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .login-form {
+            width: 100%;
+        }
+
+        .login-form-group {
+            margin-bottom: var(--space-5);
+        }
+
+        .login-form-label {
+            display: block;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+        }
+
+        .login-form-input {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            font-size: var(--font-size-base);
+            border: 2px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: var(--transition-base);
+            position: relative;
+        }
+
+        .login-form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-primary-light);
+        }
+
+        .login-form-input.error {
+            border-color: var(--color-error);
+            box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.1);
+        }
+
+        .login-input-wrapper {
+            position: relative;
+        }
+
+        .login-input-icon {
+            position: absolute;
+            left: var(--space-3);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            width: 20px;
+            height: 20px;
+        }
+
+        .login-form-input.with-icon {
+            padding-left: var(--space-10);
+        }
+
+        .login-password-toggle {
+            position: absolute;
+            right: var(--space-3);
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            padding: var(--space-1);
+            border-radius: var(--radius-base);
+            transition: var(--transition-base);
+        }
+
+        .login-password-toggle:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        .login-form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-6);
+            flex-wrap: wrap;
+            gap: var(--space-3);
+        }
+
+        .login-remember {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .login-remember input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--color-primary);
+        }
+
+        .login-forgot-link {
+            font-size: var(--font-size-sm);
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: var(--font-weight-medium);
+            transition: var(--transition-base);
+        }
+
+        .login-forgot-link:hover {
+            color: var(--color-primary-hover);
+            text-decoration: underline;
+        }
+
+        .login-submit-btn {
+            width: 100%;
+            padding: var(--space-4) var(--space-6);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);
+            color: var(--text-white);
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-base);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: var(--space-6);
+        }
+
+        .login-submit-btn:hover {
+            background: linear-gradient(135deg, var(--color-primary-hover) 0%, #69c0ff 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .login-submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-divider {
+            display: flex;
+            align-items: center;
+            margin: var(--space-6) 0;
+        }
+
+        .login-divider::before,
+        .login-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-primary);
+        }
+
+        .login-divider span {
+            padding: 0 var(--space-4);
+            font-size: var(--font-size-sm);
+            color: var(--text-tertiary);
+        }
+
+        .login-sso-btn {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+        }
+
+        .login-sso-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+
+        .login-footer {
+            text-align: center;
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--border-secondary);
+        }
+
+        .login-footer-text {
+            font-size: var(--font-size-sm);
+            color: var(--text-tertiary);
+            margin-bottom: var(--space-3);
+        }
+
+        .login-back-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            transition: var(--transition-base);
+        }
+
+        .login-back-link:hover {
+            color: var(--color-primary-hover);
+        }
+
+        .login-security-info {
+            background: var(--color-info-light);
+            border: 1px solid rgba(24, 144, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin-bottom: var(--space-6);
+            display: flex;
+            align-items: start;
+            gap: var(--space-3);
+        }
+
+        .login-security-icon {
+            color: var(--color-info);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .login-security-text {
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        /* Error Messages */
+        .field-error {
+            color: var(--color-error);
+            font-size: var(--font-size-xs);
+            margin-top: var(--space-1);
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+
+            .login-branding {
+                padding: var(--space-6);
+                text-align: center;
+            }
+
+            .login-form-section {
+                padding: var(--space-6);
+            }
+
+            .login-form-options {
+                flex-direction: column;
+                align-items: stretch;
+                gap: var(--space-4);
+            }
+
+            body {
+                padding: var(--space-2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Branding Side -->
+        <div class="login-branding">
+            <div class="login-branding-content">
+                <div class="login-logo">
+                    <div class="login-logo-icon">
+                        <i data-feather="shield" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    DataFlow
+                </div>
+
+                <h1 class="login-title">Admin Portal</h1>
+                <p class="login-subtitle">
+                    Secure access to your enterprise data analytics platform. Manage tenants, monitor systems, and configure your SaaS infrastructure.
+                </p>
+
+                <ul class="login-features">
+                    <li>
+                        <i data-feather="users"></i>
+                        Multi-tenant Management
+                    </li>
+                    <li>
+                        <i data-feather="bar-chart"></i>
+                        Platform Analytics
+                    </li>
+                    <li>
+                        <i data-feather="settings"></i>
+                        System Configuration
+                    </li>
+                    <li>
+                        <i data-feather="shield-check"></i>
+                        Enterprise Security
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Login Form Side -->
+        <div class="login-form-section">
+            <div class="login-form-header">
+                <h2 class="login-form-title">Admin Sign In</h2>
+                <p class="login-form-subtitle">Access your administrative dashboard</p>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="login-security-info">
+                <i data-feather="lock" class="login-security-icon"></i>
+                <div class="login-security-text">
+                    <strong>Secure Login:</strong> This portal uses enterprise-grade security with multi-factor authentication and encrypted connections.
+                </div>
+            </div>
+
+            <form class="login-form" data-validate>
+                <div class="login-form-group">
+                    <label for="admin-email" class="login-form-label">Email Address</label>
+                    <div class="login-input-wrapper">
+                        <i data-feather="mail" class="login-input-icon"></i>
+                        <input
+                            type="email"
+                            id="admin-email"
+                            class="login-form-input with-icon"
+                            placeholder="admin@company.com"
+                            required
+                            autocomplete="username"
+                        >
+                    </div>
+                </div>
+
+                <div class="login-form-group">
+                    <label for="admin-password" class="login-form-label">Password</label>
+                    <div class="login-input-wrapper">
+                        <i data-feather="lock" class="login-input-icon"></i>
+                        <input
+                            type="password"
+                            id="admin-password"
+                            class="login-form-input with-icon"
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="login-password-toggle" onclick="togglePassword('admin-password')">
+                            <i data-feather="eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="login-form-options">
+                    <label class="login-remember">
+                        <input type="checkbox" id="remember-me">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="login-forgot-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="login-submit-btn">
+                    <span>Sign In to Admin Portal</span>
+                </button>
+            </form>
+
+            <!-- SSO Options -->
+            <div class="login-divider">
+                <span>or sign in with</span>
+            </div>
+
+            <button class="login-sso-btn" onclick="window.PrototypeApp.showNotification('Azure AD SSO integration would be configured here', 'info')">
+                <i data-feather="microsoft" style="width: 18px; height: 18px;"></i>
+                Azure Active Directory
+            </button>
+
+            <button class="login-sso-btn" onclick="window.PrototypeApp.showNotification('Corporate SSO integration would be configured here', 'info')">
+                <i data-feather="building" style="width: 18px; height: 18px;"></i>
+                Corporate SSO
+            </button>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <p class="login-footer-text">
+                    Not an administrator?
+                </p>
+                <a href="../app/login.html" class="login-back-link">
+                    <i data-feather="arrow-left" style="width: 16px; height: 16px;"></i>
+                    Access User Application
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/prototype.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        // Password toggle functionality
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleBtn = passwordInput.nextElementSibling;
+            const icon = toggleBtn.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.setAttribute('data-feather', 'eye-off');
+            } else {
+                passwordInput.type = 'password';
+                icon.setAttribute('data-feather', 'eye');
+            }
+            feather.replace();
+        }
+
+        // Enhanced form submission for admin login
+        document.querySelector('.login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const submitBtn = document.querySelector('.login-submit-btn');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i data-feather="loader" style="width: 20px; height: 20px; animation: spin 1s linear infinite;"></i> Authenticating...';
+            feather.replace();
+
+            // Simulate authentication process
+            setTimeout(() => {
+                if (email && password) {
+                    window.PrototypeApp.showNotification('Admin authentication successful! Redirecting to dashboard...', 'success');
+
+                    // Simulate redirect to admin dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+                } else {
+                    window.PrototypeApp.showNotification('Please enter both email and password', 'error');
+
+                    // Reset button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span>Sign In to Admin Portal</span>';
+                }
+            }, 1500);
+        });
+
+        // Add subtle animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.login-container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            container.style.transition = 'all 0.6s ease';
+
+            setTimeout(() => {
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+
+        // Demo data for quick testing
+        document.getElementById('admin-email').addEventListener('focus', function() {
+            if (!this.value) {
+                setTimeout(() => {
+                    this.value = 'admin@dataflow.com';
+                }, 500);
+            }
+        });
+
+        document.getElementById('admin-password').addEventListener('focus', function() {
+            if (!this.value) {
+                setTimeout(() => {
+                    this.value = 'SecureAdmin123!';
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>

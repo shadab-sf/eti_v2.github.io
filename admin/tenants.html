@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tenant Management - DataFlow Analytics Platform">
+    <title>Tenant Management - DataFlow Analytics</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/logos/favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Tenant Management Specific Styles */
+        .tenants-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-6);
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+
+        .tenants-title {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .tenants-actions {
+            display: flex;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+        }
+
+        .tenants-filters {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-2);
+        }
+
+        .filter-input {
+            padding: var(--space-2) var(--space-3);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-sm);
+            background: var(--bg-primary);
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px var(--color-primary-light);
+        }
+
+        .tenants-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .tenant-stat-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-base);
+        }
+
+        .tenant-stat-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-3);
+            color: var(--text-white);
+        }
+
+        .stat-icon.active { background: var(--color-success); }
+        .stat-icon.pending { background: var(--color-warning); }
+        .stat-icon.suspended { background: var(--color-error); }
+        .stat-icon.total { background: var(--color-primary); }
+
+        .stat-value {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .tenants-table-container {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tenants-table-header {
+            padding: var(--space-5) var(--space-6);
+            border-bottom: 1px solid var(--border-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+        }
+
+        .table-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-base);
+            overflow: hidden;
+        }
+
+        .view-toggle-btn {
+            padding: var(--space-2) var(--space-3);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-base);
+            color: var(--text-secondary);
+        }
+
+        .view-toggle-btn.active {
+            background: var(--color-primary);
+            color: var(--text-white);
+        }
+
+        .tenants-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tenants-table th {
+            background: var(--bg-tertiary);
+            padding: var(--space-4) var(--space-6);
+            text-align: left;
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-secondary);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .tenants-table th:hover {
+            background: var(--bg-hover);
+        }
+
+        .tenants-table td {
+            padding: var(--space-4) var(--space-6);
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-secondary);
+            vertical-align: middle;
+        }
+
+        .tenants-table tbody tr {
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .tenants-table tbody tr:hover {
+            background: var(--bg-hover);
+        }
+
+        .tenant-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .tenant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-sm);
+        }
+
+        .tenant-details h4 {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .tenant-details p {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .tenant-status {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .tenant-status.active {
+            background: var(--color-success-light);
+            color: var(--color-success);
+        }
+
+        .tenant-status.pending {
+            background: var(--color-warning-light);
+            color: var(--color-warning);
+        }
+
+        .tenant-status.suspended {
+            background: var(--color-error-light);
+            color: var(--color-error);
+        }
+
+        .plan-badge {
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-medium);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .plan-badge.enterprise {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-white);
+            border: none;
+        }
+
+        .plan-badge.professional {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        .usage-bar {
+            width: 60px;
+            height: 6px;
+            background: var(--color-gray-200);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .usage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-success) 0%, var(--color-warning) 70%, var(--color-error) 100%);
+            transition: var(--transition-base);
+        }
+
+        .tenant-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-primary);
+            background: var(--bg-primary);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: var(--transition-base);
+        }
+
+        .action-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+
+        .action-btn.danger:hover {
+            border-color: var(--color-error);
+            color: var(--color-error);
+            background: var(--color-error-light);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .modal-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: var(--font-size-xl);
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: var(--space-2);
+            border-radius: var(--radius-base);
+            transition: var(--transition-base);
+        }
+
+        .modal-close:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* Grid View */
+        .tenants-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--space-6);
+            padding: var(--space-6);
+        }
+
+        .tenants-grid.active {
+            display: grid;
+        }
+
+        .tenant-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-base);
+            cursor: pointer;
+        }
+
+        .tenant-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .tenant-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--space-4);
+        }
+
+        .tenant-card-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .tenant-card-details h3 {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .tenant-card-details p {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .tenant-card-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-4);
+            margin: var(--space-4) 0;
+        }
+
+        .card-stat {
+            text-align: center;
+        }
+
+        .card-stat-value {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card-stat-label {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tenants-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tenants-actions {
+                justify-content: center;
+            }
+
+            .filters-row {
+                grid-template-columns: 1fr;
+            }
+
+            .tenants-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tenants-table-container {
+                overflow-x: auto;
+            }
+
+            .tenants-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tenant-card-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <nav class="admin-nav">
+                <div class="admin-nav-logo">
+                    <h1>DataFlow</h1>
+                    <div class="subtitle">Admin Portal</div>
+                </div>
+
+                <a href="dashboard.html" class="admin-nav-item">
+                    <i data-feather="home" class="icon"></i>
+                    <span class="text">Dashboard</span>
+                </a>
+
+                <a href="tenants.html" class="admin-nav-item active">
+                    <i data-feather="users" class="icon"></i>
+                    <span class="text">Tenants</span>
+                </a>
+
+                <a href="billing.html" class="admin-nav-item">
+                    <i data-feather="credit-card" class="icon"></i>
+                    <span class="text">Billing</span>
+                </a>
+
+                <a href="fabric-provisioning.html" class="admin-nav-item">
+                    <i data-feather="database" class="icon"></i>
+                    <span class="text">Fabric</span>
+                </a>
+
+                <a href="notifications.html" class="admin-nav-item">
+                    <i data-feather="bell" class="icon"></i>
+                    <span class="text">Notifications</span>
+                </a>
+
+                <a href="#" class="admin-nav-item">
+                    <i data-feather="settings" class="icon"></i>
+                    <span class="text">Settings</span>
+                </a>
+
+                <a href="#" class="admin-nav-item">
+                    <i data-feather="help-circle" class="icon"></i>
+                    <span class="text">Support</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <button class="admin-sidebar-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+
+                    <div class="admin-breadcrumb">
+                        <span class="admin-breadcrumb-item">Admin</span>
+                        <span class="admin-breadcrumb-separator">/</span>
+                        <span class="admin-breadcrumb-item current">Tenants</span>
+                    </div>
+                </div>
+
+                <div class="admin-header-right">
+                    <button class="admin-notification-bell">
+                        <i data-feather="bell"></i>
+                        <span class="admin-notification-badge">3</span>
+                    </button>
+
+                    <div class="admin-user-menu">
+                        <div class="admin-user-avatar">AS</div>
+                        <div class="admin-user-info">
+                            <div class="admin-user-name">Admin User</div>
+                            <div class="admin-user-role">System Admin</div>
+                        </div>
+                        <i data-feather="chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="tenants-header">
+                    <h1 class="tenants-title">Tenant Management</h1>
+                    <div class="tenants-actions">
+                        <button class="btn btn-secondary">
+                            <i data-feather="download" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+                            Export Data
+                        </button>
+                        <button class="btn btn-primary" data-modal-target="add-tenant-modal">
+                            <i data-feather="plus" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+                            Add Tenant
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="tenants-filters">
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label class="filter-label">Search Tenants</label>
+                            <input type="text" class="filter-input" placeholder="Search by name or email..." id="tenant-search">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Status</label>
+                            <select class="filter-input" id="status-filter">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Plan</label>
+                            <select class="filter-input" id="plan-filter">
+                                <option value="">All Plans</option>
+                                <option value="enterprise">Enterprise</option>
+                                <option value="professional">Professional</option>
+                                <option value="starter">Starter</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Actions</label>
+                            <button class="btn btn-secondary" onclick="clearFilters()">
+                                <i data-feather="x" style="width: 16px; height: 16px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="tenants-stats">
+                    <div class="tenant-stat-card">
+                        <div class="stat-icon total">
+                            <i data-feather="building"></i>
+                        </div>
+                        <div class="stat-value" data-counter="24">0</div>
+                        <div class="stat-label">Total Tenants</div>
+                    </div>
+
+                    <div class="tenant-stat-card">
+                        <div class="stat-icon active">
+                            <i data-feather="check-circle"></i>
+                        </div>
+                        <div class="stat-value" data-counter="22">0</div>
+                        <div class="stat-label">Active Tenants</div>
+                    </div>
+
+                    <div class="tenant-stat-card">
+                        <div class="stat-icon pending">
+                            <i data-feather="clock"></i>
+                        </div>
+                        <div class="stat-value" data-counter="1">0</div>
+                        <div class="stat-label">Pending Setup</div>
+                    </div>
+
+                    <div class="tenant-stat-card">
+                        <div class="stat-icon suspended">
+                            <i data-feather="pause-circle"></i>
+                        </div>
+                        <div class="stat-value" data-counter="1">0</div>
+                        <div class="stat-label">Suspended</div>
+                    </div>
+                </div>
+
+                <!-- Tenants Table -->
+                <div class="tenants-table-container">
+                    <div class="tenants-table-header">
+                        <h3 class="table-title">All Tenants</h3>
+                        <div class="table-actions">
+                            <div class="view-toggle">
+                                <button class="view-toggle-btn active" onclick="switchView('table')">
+                                    <i data-feather="list"></i>
+                                </button>
+                                <button class="view-toggle-btn" onclick="switchView('grid')">
+                                    <i data-feather="grid"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table View -->
+                    <div id="table-view" class="active">
+                        <table class="tenants-table">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable(0)">
+                                        Tenant <i data-feather="arrow-up-down" style="width: 12px; height: 12px; margin-left: 4px;"></i>
+                                    </th>
+                                    <th onclick="sortTable(1)">Status</th>
+                                    <th onclick="sortTable(2)">Plan</th>
+                                    <th onclick="sortTable(3)">Users</th>
+                                    <th onclick="sortTable(4)">Usage</th>
+                                    <th onclick="sortTable(5)">Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tenants-table-body">
+                                <!-- Tenant rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Grid View -->
+                    <div id="grid-view" class="tenants-grid">
+                        <!-- Grid cards will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Tenant Modal -->
+    <div id="add-tenant-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Tenant</h2>
+                <button class="modal-close" data-modal-close>
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+
+            <form class="admin-form-section" data-validate>
+                <div class="admin-form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-input" placeholder="Enter company name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Admin Email</label>
+                        <input type="email" class="form-input" placeholder="admin@company.com" required>
+                    </div>
+                </div>
+
+                <div class="admin-form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Subscription Plan</label>
+                        <select class="form-input" required>
+                            <option value="">Select Plan</option>
+                            <option value="starter">Starter - $29/month</option>
+                            <option value="professional">Professional - $99/month</option>
+                            <option value="enterprise">Enterprise - $299/month</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expected Users</label>
+                        <input type="number" class="form-input" placeholder="50" min="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-input" rows="3" placeholder="Additional notes about this tenant..."></textarea>
+                </div>
+
+                <div class="admin-form-actions">
+                    <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Tenant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/prototype.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        // Sample tenant data
+        const tenantsData = [
+            {
+                id: 1,
+                name: 'Acme Corporation',
+                email: 'admin@acme.com',
+                status: 'active',
+                plan: 'enterprise',
+                users: 150,
+                usage: 75,
+                created: '2024-01-15',
+                lastActive: '2 hours ago'
+            },
+            {
+                id: 2,
+                name: 'TechStart Inc',
+                email: 'admin@techstart.com',
+                status: 'active',
+                plan: 'professional',
+                users: 45,
+                usage: 60,
+                created: '2024-02-20',
+                lastActive: '5 hours ago'
+            },
+            {
+                id: 3,
+                name: 'Global Solutions',
+                email: 'admin@globalsolutions.com',
+                status: 'pending',
+                plan: 'enterprise',
+                users: 200,
+                usage: 0,
+                created: '2024-03-01',
+                lastActive: 'Never'
+            },
+            {
+                id: 4,
+                name: 'StartupCo',
+                email: 'admin@startupco.com',
+                status: 'active',
+                plan: 'starter',
+                users: 12,
+                usage: 30,
+                created: '2024-02-28',
+                lastActive: '3 days ago'
+            },
+            {
+                id: 5,
+                name: 'InnovateTech',
+                email: 'admin@innovatetech.com',
+                status: 'suspended',
+                plan: 'professional',
+                users: 78,
+                usage: 0,
+                created: '2024-01-10',
+                lastActive: '1 week ago'
+            }
+        ];
+
+        let currentView = 'table';
+        let filteredTenants = [...tenantsData];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTenants();
+            setupFilters();
+            animateCounters();
+        });
+
+        function renderTenants() {
+            if (currentView === 'table') {
+                renderTableView();
+            } else {
+                renderGridView();
+            }
+        }
+
+        function renderTableView() {
+            const tbody = document.getElementById('tenants-table-body');
+            tbody.innerHTML = '';
+
+            filteredTenants.forEach(tenant => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="tenant-info">
+                            <div class="tenant-avatar">${tenant.name.charAt(0)}</div>
+                            <div class="tenant-details">
+                                <h4>${tenant.name}</h4>
+                                <p>${tenant.email}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="tenant-status ${tenant.status}">
+                            <span class="status-dot ${tenant.status}"></span>
+                            ${capitalize(tenant.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="plan-badge ${tenant.plan}">
+                            ${capitalize(tenant.plan)}
+                        </span>
+                    </td>
+                    <td>${tenant.users.toLocaleString()}</td>
+                    <td>
+                        <div class="usage-bar">
+                            <div class="usage-fill" style="width: ${tenant.usage}%"></div>
+                        </div>
+                        ${tenant.usage}%
+                    </td>
+                    <td>${formatDate(tenant.created)}</td>
+                    <td>
+                        <div class="tenant-actions">
+                            <button class="action-btn" onclick="viewTenant(${tenant.id})" title="View Details">
+                                <i data-feather="eye" style="width: 14px; height: 14px;"></i>
+                            </button>
+                            <button class="action-btn" onclick="editTenant(${tenant.id})" title="Edit">
+                                <i data-feather="edit" style="width: 14px; height: 14px;"></i>
+                            </button>
+                            <button class="action-btn" onclick="manageBilling(${tenant.id})" title="Billing">
+                                <i data-feather="credit-card" style="width: 14px; height: 14px;"></i>
+                            </button>
+                            <button class="action-btn danger" onclick="suspendTenant(${tenant.id})" title="Suspend">
+                                <i data-feather="pause" style="width: 14px; height: 14px;"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            feather.replace();
+        }
+
+        function renderGridView() {
+            const gridContainer = document.getElementById('grid-view');
+            gridContainer.innerHTML = '';
+
+            filteredTenants.forEach(tenant => {
+                const card = document.createElement('div');
+                card.className = 'tenant-card';
+                card.onclick = () => viewTenant(tenant.id);
+
+                card.innerHTML = `
+                    <div class="tenant-card-header">
+                        <div class="tenant-card-info">
+                            <div class="tenant-avatar">${tenant.name.charAt(0)}</div>
+                            <div class="tenant-card-details">
+                                <h3>${tenant.name}</h3>
+                                <p>${tenant.email}</p>
+                            </div>
+                        </div>
+                        <span class="tenant-status ${tenant.status}">
+                            ${capitalize(tenant.status)}
+                        </span>
+                    </div>
+
+                    <div class="tenant-card-stats">
+                        <div class="card-stat">
+                            <div class="card-stat-value">${tenant.users}</div>
+                            <div class="card-stat-label">Users</div>
+                        </div>
+                        <div class="card-stat">
+                            <div class="card-stat-value">${tenant.usage}%</div>
+                            <div class="card-stat-label">Usage</div>
+                        </div>
+                        <div class="card-stat">
+                            <div class="card-stat-value">${capitalize(tenant.plan)}</div>
+                            <div class="card-stat-label">Plan</div>
+                        </div>
+                    </div>
+
+                    <div style="padding-top: 16px; border-top: 1px solid var(--border-secondary);">
+                        <small style="color: var(--text-secondary);">Created: ${formatDate(tenant.created)}</small>
+                    </div>
+                `;
+
+                gridContainer.appendChild(card);
+            });
+        }
+
+        function switchView(view) {
+            currentView = view;
+
+            // Update toggle buttons
+            document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.view-toggle-btn').classList.add('active');
+
+            // Show/hide views
+            document.getElementById('table-view').style.display = view === 'table' ? 'block' : 'none';
+            document.getElementById('grid-view').classList.toggle('active', view === 'grid');
+
+            renderTenants();
+        }
+
+        function setupFilters() {
+            const searchInput = document.getElementById('tenant-search');
+            const statusFilter = document.getElementById('status-filter');
+            const planFilter = document.getElementById('plan-filter');
+
+            function applyFilters() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const statusValue = statusFilter.value;
+                const planValue = planFilter.value;
+
+                filteredTenants = tenantsData.filter(tenant => {
+                    const matchesSearch = tenant.name.toLowerCase().includes(searchTerm) ||
+                                        tenant.email.toLowerCase().includes(searchTerm);
+                    const matchesStatus = !statusValue || tenant.status === statusValue;
+                    const matchesPlan = !planValue || tenant.plan === planValue;
+
+                    return matchesSearch && matchesStatus && matchesPlan;
+                });
+
+                renderTenants();
+            }
+
+            searchInput.addEventListener('input', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+            planFilter.addEventListener('change', applyFilters);
+        }
+
+        function clearFilters() {
+            document.getElementById('tenant-search').value = '';
+            document.getElementById('status-filter').value = '';
+            document.getElementById('plan-filter').value = '';
+            filteredTenants = [...tenantsData];
+            renderTenants();
+        }
+
+        function animateCounters() {
+            setTimeout(() => {
+                const counters = document.querySelectorAll('[data-counter]');
+                counters.forEach(counter => {
+                    const target = parseInt(counter.getAttribute('data-counter'));
+                    window.PrototypeApp.animateCounter(counter, target);
+                });
+            }, 500);
+        }
+
+        // Tenant actions
+        function viewTenant(id) {
+            const tenant = tenantsData.find(t => t.id === id);
+            window.PrototypeApp.showNotification(`Viewing details for ${tenant.name}`, 'info');
+        }
+
+        function editTenant(id) {
+            const tenant = tenantsData.find(t => t.id === id);
+            window.PrototypeApp.showNotification(`Edit tenant: ${tenant.name}`, 'info');
+        }
+
+        function manageBilling(id) {
+            const tenant = tenantsData.find(t => t.id === id);
+            window.location.href = `billing.html?tenant=${id}`;
+        }
+
+        function suspendTenant(id) {
+            const tenant = tenantsData.find(t => t.id === id);
+            if (confirm(`Are you sure you want to suspend ${tenant.name}?`)) {
+                window.PrototypeApp.showNotification(`${tenant.name} has been suspended`, 'warning');
+            }
+        }
+
+        // Utility functions
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function sortTable(columnIndex) {
+            // Basic sorting implementation
+            window.PrototypeApp.showNotification('Table sorting functionality', 'info');
+        }
+
+        // Add tenant form submission
+        document.querySelector('[data-validate]').addEventListener('submit', function(e) {
+            e.preventDefault();
+            window.PrototypeApp.showNotification('New tenant would be created with these details', 'success');
+            window.PrototypeApp.closeModal(document.getElementById('add-tenant-modal'));
+        });
+    </script>
+</body>
+</html>

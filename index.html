@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Enterprise SaaS Data & Analytics Platform powered by Microsoft Fabric">
+    <title>DataFlow Analytics Platform - Enterprise SaaS Solution</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/images/logos/favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Landing Page Specific Styles */
+        .landing-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-white);
+            padding: var(--space-20) 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .landing-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><circle cx="30" cy="30" r="2"/></g></svg>') repeat;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .landing-hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+
+        .landing-hero h1 {
+            font-size: 3.5rem;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-6);
+            line-height: 1.2;
+        }
+
+        .landing-hero p {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--space-8);
+            opacity: 0.9;
+        }
+
+        .landing-cta-buttons {
+            display: flex;
+            gap: var(--space-4);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .landing-cta-btn {
+            padding: var(--space-4) var(--space-8);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            border: 2px solid transparent;
+            border-radius: var(--radius-xl);
+            text-decoration: none;
+            transition: var(--transition-base);
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .landing-cta-btn.primary {
+            background: var(--text-white);
+            color: var(--color-primary);
+        }
+
+        .landing-cta-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .landing-cta-btn.secondary {
+            background: transparent;
+            color: var(--text-white);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .landing-cta-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text-white);
+        }
+
+        .landing-features {
+            padding: var(--space-20) 0;
+            background: var(--bg-secondary);
+        }
+
+        .landing-section-title {
+            text-align: center;
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+        }
+
+        .landing-section-subtitle {
+            text-align: center;
+            font-size: var(--font-size-lg);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-16);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .landing-features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-8);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+
+        .landing-feature-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            transition: var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .landing-feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .landing-feature-card.admin {
+            border-top: 4px solid var(--color-primary);
+        }
+
+        .landing-feature-card.app {
+            border-top: 4px solid var(--color-success);
+        }
+
+        .landing-feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--space-6);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--text-white);
+        }
+
+        .landing-feature-card.admin .landing-feature-icon {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);
+        }
+
+        .landing-feature-card.app .landing-feature-icon {
+            background: linear-gradient(135deg, var(--color-success) 0%, #73d13d 100%);
+        }
+
+        .landing-feature-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+        }
+
+        .landing-feature-description {
+            font-size: var(--font-size-base);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: var(--space-6);
+        }
+
+        .landing-feature-list {
+            list-style: none;
+            margin: 0 0 var(--space-8) 0;
+            padding: 0;
+        }
+
+        .landing-feature-list li {
+            padding: var(--space-2) 0;
+            display: flex;
+            align-items: center;
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+        }
+
+        .landing-feature-list li::before {
+            content: '✓';
+            color: var(--color-success);
+            font-weight: var(--font-weight-bold);
+            margin-right: var(--space-3);
+        }
+
+        .landing-demo-section {
+            padding: var(--space-20) 0;
+            background: var(--bg-primary);
+        }
+
+        .landing-demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-6);
+            max-width: 1200px;
+            margin: var(--space-16) auto 0;
+            padding: 0 var(--space-6);
+        }
+
+        .landing-demo-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-base);
+        }
+
+        .landing-demo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .landing-demo-preview {
+            height: 200px;
+            background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-200) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--text-tertiary);
+        }
+
+        .landing-demo-content {
+            padding: var(--space-6);
+        }
+
+        .landing-demo-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin-bottom: var(--space-3);
+        }
+
+        .landing-demo-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-4);
+            line-height: 1.6;
+        }
+
+        .landing-demo-btn {
+            background: var(--color-primary);
+            color: var(--text-white);
+            padding: var(--space-3) var(--space-6);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            border: none;
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            display: inline-block;
+            transition: var(--transition-base);
+            cursor: pointer;
+        }
+
+        .landing-demo-btn:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .landing-footer {
+            background: var(--color-gray-900);
+            color: var(--text-white);
+            padding: var(--space-16) 0 var(--space-8);
+            text-align: center;
+        }
+
+        .landing-footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+
+        .landing-footer-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-4);
+            background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .landing-footer-subtitle {
+            font-size: var(--font-size-base);
+            opacity: 0.8;
+            margin-bottom: var(--space-8);
+        }
+
+        .landing-footer-links {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-8);
+            margin-bottom: var(--space-8);
+            flex-wrap: wrap;
+        }
+
+        .landing-footer-link {
+            color: var(--text-white);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            opacity: 0.8;
+            transition: var(--transition-base);
+        }
+
+        .landing-footer-link:hover {
+            opacity: 1;
+            color: var(--color-primary);
+        }
+
+        .landing-footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: var(--space-6);
+            margin-top: var(--space-8);
+            font-size: var(--font-size-sm);
+            opacity: 0.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .landing-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .landing-cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .landing-features-grid,
+            .landing-demo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .landing-footer-links {
+                flex-direction: column;
+                gap: var(--space-4);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="landing-hero">
+        <div class="landing-hero-content">
+            <h1>DataFlow Analytics Platform</h1>
+            <p>Enterprise SaaS Data & Analytics Platform powered by Microsoft Fabric. Seamlessly integrate, analyze, and visualize your business data with AI-powered insights.</p>
+
+            <div class="landing-cta-buttons">
+                <a href="admin/login.html" class="landing-cta-btn primary">
+                    <i data-feather="shield" style="width: 20px; margin-right: 8px;"></i>
+                    Admin Portal
+                </a>
+                <a href="app/login.html" class="landing-cta-btn secondary">
+                    <i data-feather="users" style="width: 20px; margin-right: 8px;"></i>
+                    User Application
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="landing-features">
+        <div class="container">
+            <h2 class="landing-section-title">Two Powerful Planes, One Unified Platform</h2>
+            <p class="landing-section-subtitle">
+                Built for both technical administrators and non-technical users, our platform delivers enterprise-grade capabilities with unmatched ease of use.
+            </p>
+
+            <div class="landing-features-grid">
+                <!-- Admin Plane -->
+                <div class="landing-feature-card admin">
+                    <div class="landing-feature-icon">
+                        <i data-feather="settings"></i>
+                    </div>
+                    <h3 class="landing-feature-title">Admin Plane</h3>
+                    <p class="landing-feature-description">
+                        Comprehensive administrative control for multi-tenant management, billing, and platform configuration.
+                    </p>
+                    <ul class="landing-feature-list">
+                        <li>Multi-tenant management dashboard</li>
+                        <li>Subscription & billing controls</li>
+                        <li>Microsoft Fabric provisioning</li>
+                        <li>System health monitoring</li>
+                        <li>User access management</li>
+                        <li>Analytics & reporting</li>
+                    </ul>
+                    <a href="admin/dashboard.html" class="landing-demo-btn">Explore Admin Portal</a>
+                </div>
+
+                <!-- App Plane -->
+                <div class="landing-feature-card app">
+                    <div class="landing-feature-icon">
+                        <i data-feather="zap"></i>
+                    </div>
+                    <h3 class="landing-feature-title">Application Plane</h3>
+                    <p class="landing-feature-description">
+                        User-friendly interface designed for non-technical users to easily connect data sources and generate insights.
+                    </p>
+                    <ul class="landing-feature-list">
+                        <li>One-click data connections</li>
+                        <li>SAP, QuickBooks, Bamboo HR integration</li>
+                        <li>AI-powered insights & recommendations</li>
+                        <li>Drag & drop report builder</li>
+                        <li>Interactive dashboards</li>
+                        <li>Automated data synchronization</li>
+                    </ul>
+                    <a href="app/dashboard.html" class="landing-demo-btn">Try User Application</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="landing-demo-section">
+        <div class="container">
+            <h2 class="landing-section-title">Explore the Platform</h2>
+            <p class="landing-section-subtitle">
+                Navigate through our interactive prototypes to experience the full capabilities of both planes.
+            </p>
+
+            <div class="landing-demo-grid">
+                <!-- Admin Demos -->
+                <div class="landing-demo-card">
+                    <div class="landing-demo-preview">
+                        <i data-feather="pie-chart"></i>
+                    </div>
+                    <div class="landing-demo-content">
+                        <h4 class="landing-demo-title">Admin Dashboard</h4>
+                        <p class="landing-demo-description">
+                            Platform overview with tenant metrics, system health, and administrative controls.
+                        </p>
+                        <a href="admin/dashboard.html" class="landing-demo-btn">View Demo</a>
+                    </div>
+                </div>
+
+                <div class="landing-demo-card">
+                    <div class="landing-demo-preview">
+                        <i data-feather="users"></i>
+                    </div>
+                    <div class="landing-demo-content">
+                        <h4 class="landing-demo-title">Tenant Management</h4>
+                        <p class="landing-demo-description">
+                            Manage multiple tenants, subscriptions, and user access controls from a centralized interface.
+                        </p>
+                        <a href="admin/tenants.html" class="landing-demo-btn">View Demo</a>
+                    </div>
+                </div>
+
+                <div class="landing-demo-card">
+                    <div class="landing-demo-preview">
+                        <i data-feather="credit-card"></i>
+                    </div>
+                    <div class="landing-demo-content">
+                        <h4 class="landing-demo-title">Billing Management</h4>
+                        <p class="landing-demo-description">
+                            Comprehensive billing dashboard with usage analytics and subscription management.
+                        </p>
+                        <a href="admin/billing.html" class="landing-demo-btn">View Demo</a>
+                    </div>
+                </div>
+
+                <div class="landing-demo-card">
+                    <div class="landing-demo-preview">
+                        <i data-feather="database"></i>
+                    </div>
+                    <div class="landing-demo-content">
+                        <h4 class="landing-demo-title">Fabric Provisioning</h4>
+                        <p class="landing-demo-description">
+                            Microsoft Fabric workspace management and OneLake storage provisioning interface.
+                        </p>
+                        <a href="admin/fabric-provisioning.html" class="landing-demo-btn">View Demo</a>
+                    </div>
+                </div>
+
+                <!-- App Demos -->
+                <div class="landing-demo-card">
+                    <div class="landing-demo-preview">
+                        <i data-feather="activity"></i>
+                    </div>
+                    <div class="landing-demo-content">
+                        <h4 class="landing-demo-title">User Dashboard</h4>
+                        <p class="landing-demo-description">
+                            Clean, intuitive dashboard with AI insights and real-time data connection status.
+                        </p>
+                        <a href="app/dashboard.html" class="landing-demo-btn">View Demo</a>
+                    </div>
+                </div>
+
+                <div class="landing-demo-card">
+                    <div class="landing-demo-preview">
+                        <i data-feather="link-2"></i>
+                    </div>
+                    <div class="landing-demo-content">
+                        <h4 class="landing-demo-title">Data Connections</h4>
+                        <p class="landing-demo-description">
+                            Easy-to-use interface for connecting SAP, QuickBooks, Bamboo HR and other data sources.
+                        </p>
+                        <a href="app/data-connections.html" class="landing-demo-btn">View Demo</a>
+                    </div>
+                </div>
+
+                <div class="landing-demo-card">
+                    <div class="landing-demo-preview">
+                        <i data-feather="settings"></i>
+                    </div>
+                    <div class="landing-demo-content">
+                        <h4 class="landing-demo-title">Connection Wizard</h4>
+                        <p class="landing-demo-description">
+                            Step-by-step wizard for setting up data integrations with helpful guidance and validation.
+                        </p>
+                        <a href="app/connector-wizard.html" class="landing-demo-btn">View Demo</a>
+                    </div>
+                </div>
+
+                <div class="landing-demo-card">
+                    <div class="landing-demo-preview">
+                        <i data-feather="bar-chart-2"></i>
+                    </div>
+                    <div class="landing-demo-content">
+                        <h4 class="landing-demo-title">Report Builder</h4>
+                        <p class="landing-demo-description">
+                            Drag-and-drop report creation with pre-built templates and export capabilities.
+                        </p>
+                        <a href="app/reports.html" class="landing-demo-btn">View Demo</a>
+                    </div>
+                </div>
+
+                <div class="landing-demo-card">
+                    <div class="landing-demo-preview">
+                        <i data-feather="brain"></i>
+                    </div>
+                    <div class="landing-demo-content">
+                        <h4 class="landing-demo-title">AI Insights</h4>
+                        <p class="landing-demo-description">
+                            AI-powered analytics with automated insights, recommendations, and trend analysis.
+                        </p>
+                        <a href="app/ai-insights.html" class="landing-demo-btn">View Demo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <div class="landing-footer-content">
+            <h3 class="landing-footer-title">DataFlow Analytics</h3>
+            <p class="landing-footer-subtitle">
+                Empowering businesses with intelligent data analytics and seamless Microsoft Fabric integration.
+            </p>
+
+            <div class="landing-footer-links">
+                <a href="#" class="landing-footer-link">Documentation</a>
+                <a href="#" class="landing-footer-link">API Reference</a>
+                <a href="#" class="landing-footer-link">Support</a>
+                <a href="#" class="landing-footer-link">Contact</a>
+            </div>
+
+            <div class="landing-footer-bottom">
+                <p>&copy; 2024 DataFlow Analytics Platform. All rights reserved. | Powered by Microsoft Fabric</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/prototype.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add entrance animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe cards for animation
+        document.querySelectorAll('.landing-feature-card, .landing-demo-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

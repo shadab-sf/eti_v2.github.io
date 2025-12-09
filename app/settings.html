@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Settings - DataFlow Analytics Platform">
+    <title>Settings - DataFlow Analytics</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/logos/favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/app.css">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Settings Specific Styles */
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: var(--space-8);
+            margin-bottom: var(--space-8);
+        }
+
+        .settings-nav {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+            position: sticky;
+            top: var(--space-6);
+        }
+
+        .settings-nav-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-5) 0;
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .settings-nav-items {
+            display: grid;
+            gap: var(--space-2);
+        }
+
+        .settings-nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-base);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .settings-nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .settings-nav-item.active {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .settings-nav-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .settings-content {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .settings-section {
+            display: none;
+            padding: var(--space-8);
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .section-title {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .section-description {
+            font-size: var(--font-size-base);
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .settings-form {
+            display: grid;
+            gap: var(--space-6);
+        }
+
+        .form-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+        }
+
+        .form-section-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-4) 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .profile-avatar {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .avatar-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-white);
+        }
+
+        .avatar-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .avatar-btn {
+            padding: var(--space-2) var(--space-4);
+            font-size: var(--font-size-sm);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: var(--transition-base);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .avatar-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .notification-settings {
+            display: grid;
+            gap: var(--space-4);
+        }
+
+        .notification-group {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+        }
+
+        .notification-group-title {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-3) 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .notification-options {
+            display: grid;
+            gap: var(--space-3);
+        }
+
+        .notification-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-base);
+        }
+
+        .notification-info {
+            flex: 1;
+        }
+
+        .notification-name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .notification-description {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .notification-toggle {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .toggle-option {
+            padding: var(--space-1) var(--space-3);
+            font-size: var(--font-size-xs);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition-base);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+        }
+
+        .toggle-option.active {
+            background: var(--color-primary);
+            color: var(--text-white);
+            border-color: var(--color-primary);
+        }
+
+        .toggle-option:hover:not(.active) {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .integration-grid {
+            display: grid;
+            gap: var(--space-4);
+        }
+
+        .integration-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-5);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+        }
+
+        .integration-item:hover {
+            border-color: var(--color-primary);
+            background: var(--bg-hover);
+        }
+
+        .integration-item.connected {
+            border-color: var(--color-success);
+            background: var(--color-success-light);
+        }
+
+        .integration-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            flex-shrink: 0;
+        }
+
+        .integration-icon.quickbooks {
+            background: linear-gradient(135deg, #0077c5 0%, #00a4e4 100%);
+        }
+
+        .integration-icon.bamboohr {
+            background: linear-gradient(135deg, #6cc04a 0%, #8bc34a 100%);
+        }
+
+        .integration-icon.sap {
+            background: linear-gradient(135deg, #0057b8 0%, #1f5582 100%);
+        }
+
+        .integration-info {
+            flex: 1;
+        }
+
+        .integration-name {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .integration-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .integration-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-sm);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.connected {
+            background: var(--color-success);
+        }
+
+        .status-dot.disconnected {
+            background: var(--color-error);
+        }
+
+        .integration-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .integration-btn {
+            padding: var(--space-2) var(--space-4);
+            font-size: var(--font-size-sm);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .integration-btn.primary {
+            background: var(--color-primary);
+            color: var(--text-white);
+            border-color: var(--color-primary);
+        }
+
+        .integration-btn.primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .integration-btn.secondary {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .integration-btn.secondary:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .security-info {
+            background: linear-gradient(135deg, var(--color-info-light) 0%, #e6f7ff 100%);
+            border: 1px solid rgba(24, 144, 255, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            margin-bottom: var(--space-6);
+        }
+
+        .security-info-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+
+        .security-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--color-info);
+            color: var(--text-white);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .security-content h3 {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .security-content p {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .activity-list {
+            display: grid;
+            gap: var(--space-4);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: start;
+            gap: var(--space-3);
+            padding: var(--space-4);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+            flex-shrink: 0;
+        }
+
+        .activity-icon.login {
+            background: var(--color-success);
+        }
+
+        .activity-icon.settings {
+            background: var(--color-info);
+        }
+
+        .activity-icon.export {
+            background: var(--color-warning);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .activity-description {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .activity-time {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        .danger-zone {
+            background: var(--color-error-light);
+            border: 1px solid var(--color-error);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            margin-top: var(--space-6);
+        }
+
+        .danger-zone-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-error);
+            margin: 0 0 var(--space-3) 0;
+        }
+
+        .danger-zone-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-4) 0;
+        }
+
+        .danger-btn {
+            background: var(--color-error);
+            color: var(--text-white);
+            border: 1px solid var(--color-error);
+            padding: var(--space-3) var(--space-4);
+            font-size: var(--font-size-sm);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .danger-btn:hover {
+            background: #ff7875;
+        }
+
+        .save-changes {
+            position: sticky;
+            bottom: var(--space-6);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-secondary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-4) var(--space-6);
+            box-shadow: var(--shadow-lg);
+            margin-top: var(--space-6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .changes-info {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .save-actions {
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .settings-layout {
+                grid-template-columns: 1fr;
+                gap: var(--space-6);
+            }
+
+            .settings-nav {
+                position: static;
+                order: 2;
+            }
+
+            .settings-content {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .settings-section {
+                padding: var(--space-6) var(--space-4);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-avatar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .notification-option {
+                flex-direction: column;
+                gap: var(--space-3);
+            }
+
+            .integration-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .save-changes {
+                flex-direction: column;
+                gap: var(--space-3);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <nav class="app-nav">
+                <div class="app-nav-logo">
+                    <h1>DataFlow</h1>
+                    <div class="subtitle">Analytics Platform</div>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Main</div>
+                    <a href="dashboard.html" class="app-nav-item">
+                        <i data-feather="home" class="icon"></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+
+                    <a href="ai-insights.html" class="app-nav-item">
+                        <i data-feather="zap" class="icon"></i>
+                        <span class="text">AI Insights</span>
+                        <span class="badge badge-success">3</span>
+                    </a>
+
+                    <a href="reports.html" class="app-nav-item">
+                        <i data-feather="bar-chart-2" class="icon"></i>
+                        <span class="text">Reports</span>
+                    </a>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Data</div>
+                    <a href="data-connections.html" class="app-nav-item">
+                        <i data-feather="database" class="icon"></i>
+                        <span class="text">Data Sources</span>
+                    </a>
+
+                    <a href="connector-wizard.html" class="app-nav-item">
+                        <i data-feather="link" class="icon"></i>
+                        <span class="text">Connect New</span>
+                    </a>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Account</div>
+                    <a href="settings.html" class="app-nav-item active">
+                        <i data-feather="settings" class="icon"></i>
+                        <span class="text">Settings</span>
+                    </a>
+
+                    <a href="#" class="app-nav-item">
+                        <i data-feather="help-circle" class="icon"></i>
+                        <span class="text">Help & Support</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="app-header-left">
+                    <button class="app-sidebar-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+
+                    <div class="app-welcome">
+                        <div class="app-welcome-message">Account Settings</div>
+                        <div class="app-welcome-time">Manage your preferences and account</div>
+                    </div>
+                </div>
+
+                <div class="app-header-right">
+                    <div class="app-user-menu">
+                        <div class="app-user-avatar">SC</div>
+                        <div class="app-user-info">
+                            <div class="app-user-name">Sarah Chen</div>
+                            <div class="app-user-status">Online</div>
+                        </div>
+                        <i data-feather="chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="app-content">
+                <div class="settings-layout">
+                    <!-- Settings Navigation -->
+                    <div class="settings-nav">
+                        <h2 class="settings-nav-title">Settings</h2>
+                        <div class="settings-nav-items">
+                            <a href="#profile" class="settings-nav-item active" onclick="showSection('profile', this)">
+                                <i data-feather="user" class="settings-nav-icon"></i>
+                                Profile & Account
+                            </a>
+                            <a href="#notifications" class="settings-nav-item" onclick="showSection('notifications', this)">
+                                <i data-feather="bell" class="settings-nav-icon"></i>
+                                Notifications
+                            </a>
+                            <a href="#integrations" class="settings-nav-item" onclick="showSection('integrations', this)">
+                                <i data-feather="link" class="settings-nav-icon"></i>
+                                Integrations
+                            </a>
+                            <a href="#security" class="settings-nav-item" onclick="showSection('security', this)">
+                                <i data-feather="shield" class="settings-nav-icon"></i>
+                                Security & Privacy
+                            </a>
+                            <a href="#preferences" class="settings-nav-item" onclick="showSection('preferences', this)">
+                                <i data-feather="sliders" class="settings-nav-icon"></i>
+                                Preferences
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Settings Content -->
+                    <div class="settings-content">
+                        <!-- Profile Section -->
+                        <div class="settings-section active" id="profile-section">
+                            <div class="section-header">
+                                <h1 class="section-title">Profile & Account</h1>
+                                <p class="section-description">
+                                    Manage your personal information, profile picture, and account details.
+                                </p>
+                            </div>
+
+                            <div class="settings-form">
+                                <div class="form-section">
+                                    <h3 class="form-section-title">
+                                        <i data-feather="user-circle" style="width: 18px; height: 18px;"></i>
+                                        Profile Information
+                                    </h3>
+
+                                    <div class="profile-avatar">
+                                        <div class="avatar-image">SC</div>
+                                        <div class="avatar-actions">
+                                            <button class="avatar-btn">Upload New Photo</button>
+                                            <button class="avatar-btn">Remove Photo</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">First Name</label>
+                                            <input type="text" class="form-input" value="Sarah" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Last Name</label>
+                                            <input type="text" class="form-input" value="Chen" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Email Address</label>
+                                            <input type="email" class="form-input" value="sarah.chen@company.com" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Job Title</label>
+                                            <input type="text" class="form-input" value="Finance Manager">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Company</label>
+                                            <input type="text" class="form-input" value="Acme Corporation" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Time Zone</label>
+                                            <select class="form-input">
+                                                <option value="PST">Pacific Time (PST)</option>
+                                                <option value="EST">Eastern Time (EST)</option>
+                                                <option value="CST">Central Time (CST)</option>
+                                                <option value="MST">Mountain Time (MST)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h3 class="form-section-title">
+                                        <i data-feather="lock" style="width: 18px; height: 18px;"></i>
+                                        Account Security
+                                    </h3>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Current Password</label>
+                                            <input type="password" class="form-input" placeholder="Enter current password">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">New Password</label>
+                                            <input type="password" class="form-input" placeholder="Enter new password">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Confirm New Password</label>
+                                            <input type="password" class="form-input" placeholder="Confirm new password">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notifications Section -->
+                        <div class="settings-section" id="notifications-section">
+                            <div class="section-header">
+                                <h1 class="section-title">Notification Preferences</h1>
+                                <p class="section-description">
+                                    Choose how and when you want to be notified about important events and updates.
+                                </p>
+                            </div>
+
+                            <div class="notification-settings">
+                                <div class="notification-group">
+                                    <h3 class="notification-group-title">
+                                        <i data-feather="zap" style="width: 18px; height: 18px;"></i>
+                                        AI Insights & Recommendations
+                                    </h3>
+                                    <div class="notification-options">
+                                        <div class="notification-option">
+                                            <div class="notification-info">
+                                                <div class="notification-name">New AI Insights</div>
+                                                <div class="notification-description">When new insights are available for your data</div>
+                                            </div>
+                                            <div class="notification-toggle">
+                                                <button class="toggle-option active" onclick="toggleNotification(this)">Email</button>
+                                                <button class="toggle-option active" onclick="toggleNotification(this)">App</button>
+                                                <button class="toggle-option" onclick="toggleNotification(this)">SMS</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="notification-option">
+                                            <div class="notification-info">
+                                                <div class="notification-name">Weekly Summary</div>
+                                                <div class="notification-description">Weekly digest of insights and trends</div>
+                                            </div>
+                                            <div class="notification-toggle">
+                                                <button class="toggle-option active" onclick="toggleNotification(this)">Email</button>
+                                                <button class="toggle-option" onclick="toggleNotification(this)">App</button>
+                                                <button class="toggle-option" onclick="toggleNotification(this)">SMS</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="notification-group">
+                                    <h3 class="notification-group-title">
+                                        <i data-feather="database" style="width: 18px; height: 18px;"></i>
+                                        Data & Sync Updates
+                                    </h3>
+                                    <div class="notification-options">
+                                        <div class="notification-option">
+                                            <div class="notification-info">
+                                                <div class="notification-name">Sync Completed</div>
+                                                <div class="notification-description">When data sync from your sources is completed</div>
+                                            </div>
+                                            <div class="notification-toggle">
+                                                <button class="toggle-option" onclick="toggleNotification(this)">Email</button>
+                                                <button class="toggle-option active" onclick="toggleNotification(this)">App</button>
+                                                <button class="toggle-option" onclick="toggleNotification(this)">SMS</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="notification-option">
+                                            <div class="notification-info">
+                                                <div class="notification-name">Sync Errors</div>
+                                                <div class="notification-description">When there are issues with data synchronization</div>
+                                            </div>
+                                            <div class="notification-toggle">
+                                                <button class="toggle-option active" onclick="toggleNotification(this)">Email</button>
+                                                <button class="toggle-option active" onclick="toggleNotification(this)">App</button>
+                                                <button class="toggle-option" onclick="toggleNotification(this)">SMS</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="notification-group">
+                                    <h3 class="notification-group-title">
+                                        <i data-feather="bar-chart-2" style="width: 18px; height: 18px;"></i>
+                                        Reports & Exports
+                                    </h3>
+                                    <div class="notification-options">
+                                        <div class="notification-option">
+                                            <div class="notification-info">
+                                                <div class="notification-name">Report Ready</div>
+                                                <div class="notification-description">When scheduled reports are generated and ready</div>
+                                            </div>
+                                            <div class="notification-toggle">
+                                                <button class="toggle-option active" onclick="toggleNotification(this)">Email</button>
+                                                <button class="toggle-option active" onclick="toggleNotification(this)">App</button>
+                                                <button class="toggle-option" onclick="toggleNotification(this)">SMS</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="notification-option">
+                                            <div class="notification-info">
+                                                <div class="notification-name">Export Completed</div>
+                                                <div class="notification-description">When data exports are finished processing</div>
+                                            </div>
+                                            <div class="notification-toggle">
+                                                <button class="toggle-option active" onclick="toggleNotification(this)">Email</button>
+                                                <button class="toggle-option" onclick="toggleNotification(this)">App</button>
+                                                <button class="toggle-option" onclick="toggleNotification(this)">SMS</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Integrations Section -->
+                        <div class="settings-section" id="integrations-section">
+                            <div class="section-header">
+                                <h1 class="section-title">Data Source Integrations</h1>
+                                <p class="section-description">
+                                    Manage your connected data sources and configure sync settings for each integration.
+                                </p>
+                            </div>
+
+                            <div class="integration-grid">
+                                <div class="integration-item connected">
+                                    <div class="integration-icon quickbooks">QB</div>
+                                    <div class="integration-info">
+                                        <h3 class="integration-name">QuickBooks Online</h3>
+                                        <p class="integration-description">Financial data including invoices, expenses, and profit & loss statements</p>
+                                        <div class="integration-status">
+                                            <div class="status-dot connected"></div>
+                                            <span>Connected • Last sync: 2 hours ago</span>
+                                        </div>
+                                    </div>
+                                    <div class="integration-actions">
+                                        <button class="integration-btn secondary" onclick="configureIntegration('quickbooks')">Configure</button>
+                                        <button class="integration-btn secondary" onclick="syncNow('quickbooks')">Sync Now</button>
+                                    </div>
+                                </div>
+
+                                <div class="integration-item connected">
+                                    <div class="integration-icon bamboohr">HR</div>
+                                    <div class="integration-info">
+                                        <h3 class="integration-name">Bamboo HR</h3>
+                                        <p class="integration-description">Employee data, payroll information, and HR metrics</p>
+                                        <div class="integration-status">
+                                            <div class="status-dot connected"></div>
+                                            <span>Connected • Last sync: 1 hour ago</span>
+                                        </div>
+                                    </div>
+                                    <div class="integration-actions">
+                                        <button class="integration-btn secondary" onclick="configureIntegration('bamboohr')">Configure</button>
+                                        <button class="integration-btn secondary" onclick="syncNow('bamboohr')">Sync Now</button>
+                                    </div>
+                                </div>
+
+                                <div class="integration-item">
+                                    <div class="integration-icon sap">SAP</div>
+                                    <div class="integration-info">
+                                        <h3 class="integration-name">SAP ERP</h3>
+                                        <p class="integration-description">Enterprise resource planning data for comprehensive business insights</p>
+                                        <div class="integration-status">
+                                            <div class="status-dot disconnected"></div>
+                                            <span>Not connected • Available for setup</span>
+                                        </div>
+                                    </div>
+                                    <div class="integration-actions">
+                                        <button class="integration-btn primary" onclick="window.location.href='connector-wizard.html?source=sap'">Connect</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="form-section-title">
+                                    <i data-feather="refresh-cw" style="width: 18px; height: 18px;"></i>
+                                    Sync Settings
+                                </h3>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Default Sync Frequency</label>
+                                        <select class="form-input">
+                                            <option value="1h">Every hour</option>
+                                            <option value="4h" selected>Every 4 hours</option>
+                                            <option value="24h">Once daily</option>
+                                            <option value="manual">Manual only</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Sync Time Window</label>
+                                        <select class="form-input">
+                                            <option value="business">Business hours only (9 AM - 6 PM)</option>
+                                            <option value="overnight">Overnight (10 PM - 6 AM)</option>
+                                            <option value="anytime" selected>Anytime</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <input type="checkbox" style="margin-right: var(--space-2);" checked>
+                                        Automatically retry failed syncs
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <input type="checkbox" style="margin-right: var(--space-2);" checked>
+                                        Send notifications for sync issues
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Section -->
+                        <div class="settings-section" id="security-section">
+                            <div class="section-header">
+                                <h1 class="section-title">Security & Privacy</h1>
+                                <p class="section-description">
+                                    Manage your account security, privacy settings, and view recent account activity.
+                                </p>
+                            </div>
+
+                            <div class="security-info">
+                                <div class="security-info-header">
+                                    <div class="security-icon">
+                                        <i data-feather="shield-check"></i>
+                                    </div>
+                                    <div class="security-content">
+                                        <h3>Your Account is Secure</h3>
+                                        <p>All your data is encrypted and protected with industry-standard security measures.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="settings-form">
+                                <div class="form-section">
+                                    <h3 class="form-section-title">
+                                        <i data-feather="key" style="width: 18px; height: 18px;"></i>
+                                        Two-Factor Authentication
+                                    </h3>
+
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <input type="checkbox" style="margin-right: var(--space-2);" checked>
+                                            Enable two-factor authentication (Recommended)
+                                        </label>
+                                        <p style="font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-2) 0 0 0;">
+                                            Add an extra layer of security to your account with SMS or app-based authentication.
+                                        </p>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Primary Method</label>
+                                            <select class="form-input">
+                                                <option value="sms">SMS Text Message</option>
+                                                <option value="app">Authenticator App</option>
+                                                <option value="email">Email</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Phone Number</label>
+                                            <input type="tel" class="form-input" value="+1 (555) 123-4567">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h3 class="form-section-title">
+                                        <i data-feather="activity" style="width: 18px; height: 18px;"></i>
+                                        Recent Account Activity
+                                    </h3>
+
+                                    <div class="activity-list">
+                                        <div class="activity-item">
+                                            <div class="activity-icon login">
+                                                <i data-feather="log-in" style="width: 16px; height: 16px;"></i>
+                                            </div>
+                                            <div class="activity-content">
+                                                <div class="activity-title">Successful Login</div>
+                                                <div class="activity-description">Signed in from Chrome on macOS • IP: 192.168.1.100</div>
+                                                <div class="activity-time">2 hours ago</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="activity-item">
+                                            <div class="activity-icon export">
+                                                <i data-feather="download" style="width: 16px; height: 16px;"></i>
+                                            </div>
+                                            <div class="activity-content">
+                                                <div class="activity-title">Report Exported</div>
+                                                <div class="activity-description">Downloaded Financial Summary Report as PDF</div>
+                                                <div class="activity-time">6 hours ago</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="activity-item">
+                                            <div class="activity-icon settings">
+                                                <i data-feather="settings" style="width: 16px; height: 16px;"></i>
+                                            </div>
+                                            <div class="activity-content">
+                                                <div class="activity-title">Settings Modified</div>
+                                                <div class="activity-description">Updated notification preferences</div>
+                                                <div class="activity-time">1 day ago</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="activity-item">
+                                            <div class="activity-icon login">
+                                                <i data-feather="log-in" style="width: 16px; height: 16px;"></i>
+                                            </div>
+                                            <div class="activity-content">
+                                                <div class="activity-title">Successful Login</div>
+                                                <div class="activity-description">Signed in from Safari on iPhone • IP: 10.0.1.50</div>
+                                                <div class="activity-time">2 days ago</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="danger-zone">
+                                <h3 class="danger-zone-title">
+                                    <i data-feather="alert-triangle" style="width: 18px; height: 18px;"></i>
+                                    Danger Zone
+                                </h3>
+                                <p class="danger-zone-description">
+                                    Once you delete your account, there is no going back. This will permanently delete all your data, reports, and account information.
+                                </p>
+                                <button class="danger-btn" onclick="confirmDeleteAccount()">Delete Account</button>
+                            </div>
+                        </div>
+
+                        <!-- Preferences Section -->
+                        <div class="settings-section" id="preferences-section">
+                            <div class="section-header">
+                                <h1 class="section-title">Display & Preferences</h1>
+                                <p class="section-description">
+                                    Customize your dashboard appearance, date formats, and other display preferences.
+                                </p>
+                            </div>
+
+                            <div class="settings-form">
+                                <div class="form-section">
+                                    <h3 class="form-section-title">
+                                        <i data-feather="monitor" style="width: 18px; height: 18px;"></i>
+                                        Display Settings
+                                    </h3>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Theme</label>
+                                            <select class="form-input">
+                                                <option value="light" selected>Light</option>
+                                                <option value="dark">Dark</option>
+                                                <option value="system">System Default</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Language</label>
+                                            <select class="form-input">
+                                                <option value="en" selected>English (US)</option>
+                                                <option value="es">Español</option>
+                                                <option value="fr">Français</option>
+                                                <option value="de">Deutsch</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Date Format</label>
+                                            <select class="form-input">
+                                                <option value="mdy" selected>MM/DD/YYYY</option>
+                                                <option value="dmy">DD/MM/YYYY</option>
+                                                <option value="ymd">YYYY-MM-DD</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Number Format</label>
+                                            <select class="form-input">
+                                                <option value="us" selected>1,234.56 (US)</option>
+                                                <option value="eu">1.234,56 (European)</option>
+                                                <option value="in">1,23,456.78 (Indian)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h3 class="form-section-title">
+                                        <i data-feather="layout" style="width: 18px; height: 18px;"></i>
+                                        Dashboard Preferences
+                                    </h3>
+
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <input type="checkbox" style="margin-right: var(--space-2);" checked>
+                                            Show AI insights on dashboard
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <input type="checkbox" style="margin-right: var(--space-2);" checked>
+                                            Display recent activity feed
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <input type="checkbox" style="margin-right: var(--space-2);">
+                                            Auto-refresh dashboard every 5 minutes
+                                        </label>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Default Dashboard View</label>
+                                            <select class="form-input">
+                                                <option value="overview" selected>Overview</option>
+                                                <option value="financial">Financial Focus</option>
+                                                <option value="hr">HR Focus</option>
+                                                <option value="custom">Custom View</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Items per Page</label>
+                                            <select class="form-input">
+                                                <option value="10">10 items</option>
+                                                <option value="25" selected>25 items</option>
+                                                <option value="50">50 items</option>
+                                                <option value="100">100 items</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Save Changes Bar -->
+                        <div class="save-changes" id="save-changes" style="display: none;">
+                            <div class="changes-info">
+                                <i data-feather="info" style="width: 16px; height: 16px; margin-right: var(--space-2);"></i>
+                                You have unsaved changes
+                            </div>
+                            <div class="save-actions">
+                                <button class="btn btn-secondary" onclick="discardChanges()">Discard</button>
+                                <button class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/prototype.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        let hasUnsavedChanges = false;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupSettingsNavigation();
+            setupFormHandling();
+        });
+
+        function setupSettingsNavigation() {
+            // Handle section switching
+            window.showSection = function(sectionId, navItem) {
+                // Update nav active state
+                document.querySelectorAll('.settings-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                navItem.classList.add('active');
+
+                // Show selected section
+                document.querySelectorAll('.settings-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(sectionId + '-section').classList.add('active');
+
+                // Update URL hash
+                window.location.hash = sectionId;
+            };
+
+            // Handle initial hash routing
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                const navItem = document.querySelector(`a[href="#${hash}"]`);
+                if (navItem) {
+                    showSection(hash, navItem);
+                }
+            }
+        }
+
+        function setupFormHandling() {
+            // Track changes in form inputs
+            document.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('change', function() {
+                    markAsChanged();
+                });
+            });
+        }
+
+        function markAsChanged() {
+            hasUnsavedChanges = true;
+            document.getElementById('save-changes').style.display = 'flex';
+        }
+
+        function saveChanges() {
+            hasUnsavedChanges = false;
+            document.getElementById('save-changes').style.display = 'none';
+            window.PrototypeApp.showNotification('Settings saved successfully', 'success');
+        }
+
+        function discardChanges() {
+            hasUnsavedChanges = false;
+            document.getElementById('save-changes').style.display = 'none';
+            window.PrototypeApp.showNotification('Changes discarded', 'info');
+            // In a real app, you would reload the form values
+        }
+
+        function toggleNotification(button) {
+            button.classList.toggle('active');
+            markAsChanged();
+
+            const method = button.textContent;
+            const status = button.classList.contains('active') ? 'enabled' : 'disabled';
+            window.PrototypeApp.showNotification(`${method} notifications ${status}`, 'info');
+        }
+
+        function configureIntegration(integration) {
+            window.PrototypeApp.showNotification(`Opening ${integration} configuration`, 'info');
+        }
+
+        function syncNow(integration) {
+            window.PrototypeApp.showNotification(`Starting sync for ${integration}...`, 'info');
+            setTimeout(() => {
+                window.PrototypeApp.showNotification(`${integration} sync completed`, 'success');
+            }, 2000);
+        }
+
+        function confirmDeleteAccount() {
+            const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+            if (confirmed) {
+                window.PrototypeApp.showNotification('Account deletion process initiated. Please check your email for confirmation.', 'warning');
+            }
+        }
+
+        // Avatar upload handling
+        document.querySelectorAll('.avatar-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.textContent;
+                if (action === 'Upload New Photo') {
+                    // Simulate file picker
+                    window.PrototypeApp.showNotification('Photo upload functionality would open here', 'info');
+                } else if (action === 'Remove Photo') {
+                    window.PrototypeApp.showNotification('Profile photo removed', 'info');
+                }
+                markAsChanged();
+            });
+        });
+
+        // Prevent navigation away with unsaved changes
+        window.addEventListener('beforeunload', function(e) {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Update page title based on active section
+        document.querySelectorAll('.settings-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const sectionName = this.textContent.trim();
+                document.title = `${sectionName} - Settings - DataFlow Analytics`;
+            });
+        });
+    </script>
+</body>
+</html>

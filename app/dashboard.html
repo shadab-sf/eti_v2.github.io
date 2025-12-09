@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard - DataFlow Analytics Platform">
+    <title>Dashboard - DataFlow Analytics</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/logos/favicon.ico">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/app.css">
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        /* Dashboard specific enhancements */
+        .dashboard-welcome {
+            margin-bottom: var(--space-8);
+        }
+
+        .insights-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .main-insights {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-secondary);
+        }
+
+        .insights-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: var(--space-6);
+        }
+
+        .insights-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .insight-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            margin-bottom: var(--space-4);
+            border-left: 4px solid var(--color-success);
+            transition: var(--transition-base);
+            cursor: pointer;
+        }
+
+        .insight-card:hover {
+            background: var(--bg-hover);
+            transform: translateX(4px);
+        }
+
+        .insight-card.warning {
+            border-left-color: var(--color-warning);
+        }
+
+        .insight-card.info {
+            border-left-color: var(--color-info);
+        }
+
+        .insight-header {
+            display: flex;
+            justify-content: between;
+            align-items: start;
+            margin-bottom: var(--space-3);
+        }
+
+        .insight-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--color-success);
+            margin-right: var(--space-3);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .insight-card.warning .insight-icon {
+            color: var(--color-warning);
+        }
+
+        .insight-card.info .insight-icon {
+            color: var(--color-info);
+        }
+
+        .insight-content {
+            flex: 1;
+        }
+
+        .insight-title {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .insight-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin: 0 0 var(--space-3) 0;
+        }
+
+        .insight-action {
+            font-size: var(--font-size-sm);
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: var(--font-weight-medium);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            transition: var(--transition-base);
+        }
+
+        .insight-action:hover {
+            color: var(--color-primary-hover);
+        }
+
+        .quick-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+        }
+
+        .metric-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-5);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-secondary);
+            text-align: center;
+            transition: var(--transition-base);
+            cursor: pointer;
+        }
+
+        .metric-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-3);
+            color: var(--text-white);
+        }
+
+        .metric-icon.revenue {
+            background: linear-gradient(135deg, var(--color-success) 0%, #73d13d 100%);
+        }
+
+        .metric-icon.customers {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #40a9ff 100%);
+        }
+
+        .metric-icon.orders {
+            background: linear-gradient(135deg, var(--color-warning) 0%, #ffc53d 100%);
+        }
+
+        .metric-icon.satisfaction {
+            background: linear-gradient(135deg, #722ed1 0%, #b37feb 100%);
+        }
+
+        .metric-value {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .metric-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .metric-trend {
+            font-size: var(--font-size-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-1);
+        }
+
+        .metric-trend.up {
+            color: var(--color-success);
+        }
+
+        .metric-trend.down {
+            color: var(--color-error);
+        }
+
+        .connections-status {
+            margin-bottom: var(--space-8);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: var(--space-4);
+        }
+
+        .section-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .section-action {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            transition: var(--transition-base);
+        }
+
+        .section-action:hover {
+            color: var(--color-primary-hover);
+        }
+
+        .getting-started {
+            background: linear-gradient(135deg, var(--color-primary-light) 0%, #e6f7ff 100%);
+            border: 1px solid rgba(24, 144, 255, 0.2);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .getting-started-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .getting-started-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--color-primary);
+            color: var(--text-white);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .getting-started-content h3 {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .getting-started-content p {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .progress-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            transition: var(--transition-base);
+            cursor: pointer;
+        }
+
+        .progress-step:hover {
+            background: var(--bg-hover);
+        }
+
+        .step-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+            flex-shrink: 0;
+        }
+
+        .step-indicator.completed {
+            background: var(--color-success);
+            color: var(--text-white);
+        }
+
+        .step-indicator.current {
+            background: var(--color-primary);
+            color: var(--text-white);
+        }
+
+        .step-indicator.pending {
+            background: var(--color-gray-300);
+            color: var(--text-white);
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .step-description {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .recent-activity {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-secondary);
+        }
+
+        .activity-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: start;
+            gap: var(--space-3);
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-white);
+            flex-shrink: 0;
+        }
+
+        .activity-icon.success {
+            background: var(--color-success);
+        }
+
+        .activity-icon.info {
+            background: var(--color-info);
+        }
+
+        .activity-icon.warning {
+            background: var(--color-warning);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .activity-description {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 0 0 var(--space-1) 0;
+        }
+
+        .activity-time {
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .insights-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quick-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .progress-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <nav class="app-nav">
+                <div class="app-nav-logo">
+                    <h1>DataFlow</h1>
+                    <div class="subtitle">Analytics Platform</div>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Main</div>
+                    <a href="dashboard.html" class="app-nav-item active">
+                        <i data-feather="home" class="icon"></i>
+                        <span class="text">Dashboard</span>
+                    </a>
+
+                    <a href="ai-insights.html" class="app-nav-item">
+                        <i data-feather="zap" class="icon"></i>
+                        <span class="text">AI Insights</span>
+                        <span class="badge badge-success">3</span>
+                    </a>
+
+                    <a href="reports.html" class="app-nav-item">
+                        <i data-feather="bar-chart-2" class="icon"></i>
+                        <span class="text">Reports</span>
+                    </a>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Data</div>
+                    <a href="data-connections.html" class="app-nav-item">
+                        <i data-feather="database" class="icon"></i>
+                        <span class="text">Data Sources</span>
+                        <span class="badge badge-warning">Setup</span>
+                    </a>
+
+                    <a href="connector-wizard.html" class="app-nav-item">
+                        <i data-feather="link" class="icon"></i>
+                        <span class="text">Connect New</span>
+                    </a>
+                </div>
+
+                <div class="app-nav-section">
+                    <div class="app-nav-section-title">Account</div>
+                    <a href="settings.html" class="app-nav-item">
+                        <i data-feather="settings" class="icon"></i>
+                        <span class="text">Settings</span>
+                    </a>
+
+                    <a href="#" class="app-nav-item">
+                        <i data-feather="help-circle" class="icon"></i>
+                        <span class="text">Help & Support</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="app-header-left">
+                    <button class="app-sidebar-toggle">
+                        <i data-feather="menu"></i>
+                    </button>
+
+                    <div class="app-welcome">
+                        <div class="app-welcome-message">Good morning, Sarah! 👋</div>
+                        <div class="app-welcome-time" id="current-time"></div>
+                    </div>
+                </div>
+
+                <div class="app-header-right">
+                    <div class="app-search-box">
+                        <i data-feather="search" class="app-search-icon"></i>
+                        <input type="text" class="app-search-input" placeholder="Search reports, data, insights...">
+                    </div>
+
+                    <div class="app-user-menu">
+                        <div class="app-user-avatar">SC</div>
+                        <div class="app-user-info">
+                            <div class="app-user-name">Sarah Chen</div>
+                            <div class="app-user-status">
+                                Online
+                            </div>
+                        </div>
+                        <i data-feather="chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="app-content">
+                <!-- Welcome Banner -->
+                <div class="app-welcome-banner">
+                    <div class="app-welcome-content">
+                        <h1 class="app-welcome-title">Welcome to Your Analytics Hub</h1>
+                        <p class="app-welcome-subtitle">
+                            Your data is connected and insights are ready. Here's what's happening with your business today.
+                        </p>
+
+                        <div class="app-quick-actions">
+                            <a href="connector-wizard.html" class="app-quick-action">
+                                <i data-feather="plus-circle" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+                                Connect New Data
+                            </a>
+                            <a href="reports.html" class="app-quick-action">
+                                <i data-feather="file-text" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+                                Create Report
+                            </a>
+                            <a href="ai-insights.html" class="app-quick-action">
+                                <i data-feather="zap" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+                                View AI Insights
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Getting Started Section (for first-time users) -->
+                <div class="getting-started" id="getting-started-section">
+                    <div class="getting-started-header">
+                        <div class="getting-started-icon">
+                            <i data-feather="compass"></i>
+                        </div>
+                        <div class="getting-started-content">
+                            <h3>Let's Get Your Data Connected</h3>
+                            <p>Follow these simple steps to start getting insights from your business data</p>
+                        </div>
+                    </div>
+
+                    <div class="progress-steps">
+                        <div class="progress-step" onclick="window.location.href='data-connections.html'">
+                            <div class="step-indicator completed">✓</div>
+                            <div class="step-content">
+                                <div class="step-title">Connect QuickBooks</div>
+                                <div class="step-description">Link your financial data</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-step" onclick="window.location.href='connector-wizard.html'">
+                            <div class="step-indicator current">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Add HR System</div>
+                                <div class="step-description">Connect employee data</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-step">
+                            <div class="step-indicator pending">3</div>
+                            <div class="step-content">
+                                <div class="step-title">First Report</div>
+                                <div class="step-description">Create your dashboard</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-step">
+                            <div class="step-indicator pending">4</div>
+                            <div class="step-content">
+                                <div class="step-title">Explore AI</div>
+                                <div class="step-description">Review AI recommendations</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="quick-metrics">
+                    <div class="metric-card" onclick="window.location.href='reports.html'">
+                        <div class="metric-icon revenue">
+                            <i data-feather="dollar-sign"></i>
+                        </div>
+                        <div class="metric-value" data-counter="47200">$0</div>
+                        <div class="metric-label">Monthly Revenue</div>
+                        <div class="metric-trend up">
+                            <i data-feather="trending-up" style="width: 12px; height: 12px;"></i>
+                            +12.3% from last month
+                        </div>
+                    </div>
+
+                    <div class="metric-card" onclick="window.location.href='reports.html'">
+                        <div class="metric-icon customers">
+                            <i data-feather="users"></i>
+                        </div>
+                        <div class="metric-value" data-counter="1847">0</div>
+                        <div class="metric-label">Active Customers</div>
+                        <div class="metric-trend up">
+                            <i data-feather="trending-up" style="width: 12px; height: 12px;"></i>
+                            +8.7% growth
+                        </div>
+                    </div>
+
+                    <div class="metric-card" onclick="window.location.href='reports.html'">
+                        <div class="metric-icon orders">
+                            <i data-feather="shopping-bag"></i>
+                        </div>
+                        <div class="metric-value" data-counter="156">0</div>
+                        <div class="metric-label">Orders This Week</div>
+                        <div class="metric-trend down">
+                            <i data-feather="trending-down" style="width: 12px; height: 12px;"></i>
+                            -3.2% from last week
+                        </div>
+                    </div>
+
+                    <div class="metric-card" onclick="window.location.href='reports.html'">
+                        <div class="metric-icon satisfaction">
+                            <i data-feather="heart"></i>
+                        </div>
+                        <div class="metric-value">4.8</div>
+                        <div class="metric-label">Customer Satisfaction</div>
+                        <div class="metric-trend up">
+                            <i data-feather="trending-up" style="width: 12px; height: 12px;"></i>
+                            +0.3 improvement
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Grid -->
+                <div class="insights-container">
+                    <!-- AI Insights -->
+                    <div class="main-insights">
+                        <div class="insights-header">
+                            <h3 class="insights-title">🤖 AI Insights for You</h3>
+                        </div>
+
+                        <div class="insight-card" onclick="window.location.href='ai-insights.html'">
+                            <div style="display: flex; align-items: start;">
+                                <i data-feather="trending-up" class="insight-icon"></i>
+                                <div class="insight-content">
+                                    <h4 class="insight-title">Revenue is trending upward this quarter</h4>
+                                    <p class="insight-description">
+                                        Your monthly revenue has increased by 12.3% compared to last month. This growth is primarily driven by increased customer acquisition and higher average order values.
+                                    </p>
+                                    <a href="ai-insights.html" class="insight-action">
+                                        See detailed analysis
+                                        <i data-feather="arrow-right" style="width: 14px; height: 14px;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="insight-card warning" onclick="window.location.href='ai-insights.html'">
+                            <div style="display: flex; align-items: start;">
+                                <i data-feather="alert-circle" class="insight-icon"></i>
+                                <div class="insight-content">
+                                    <h4 class="insight-title">Weekly orders are slightly down</h4>
+                                    <p class="insight-description">
+                                        There's a 3.2% decrease in orders this week. This might be seasonal, but consider reviewing your marketing campaigns or checking for any service issues.
+                                    </p>
+                                    <a href="ai-insights.html" class="insight-action">
+                                        Explore recommendations
+                                        <i data-feather="arrow-right" style="width: 14px; height: 14px;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="insight-card info" onclick="window.location.href='ai-insights.html'">
+                            <div style="display: flex; align-items: start;">
+                                <i data-feather="users" class="insight-icon"></i>
+                                <div class="insight-content">
+                                    <h4 class="insight-title">Customer satisfaction is excellent</h4>
+                                    <p class="insight-description">
+                                        Your customer satisfaction score of 4.8/5 is above industry average. Customers particularly appreciate your fast response times and product quality.
+                                    </p>
+                                    <a href="ai-insights.html" class="insight-action">
+                                        View customer feedback
+                                        <i data-feather="arrow-right" style="width: 14px; height: 14px;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="recent-activity">
+                        <div class="section-header">
+                            <h3 class="section-title">Recent Activity</h3>
+                            <a href="#" class="section-action">
+                                View All
+                                <i data-feather="arrow-right" style="width: 14px; height: 14px;"></i>
+                            </a>
+                        </div>
+
+                        <ul class="activity-list">
+                            <li class="activity-item">
+                                <div class="activity-icon success">
+                                    <i data-feather="check-circle" style="width: 16px; height: 16px;"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">QuickBooks data synced</div>
+                                    <div class="activity-description">Latest financial data updated successfully</div>
+                                    <div class="activity-time">2 hours ago</div>
+                                </div>
+                            </li>
+
+                            <li class="activity-item">
+                                <div class="activity-icon info">
+                                    <i data-feather="file-text" style="width: 16px; height: 16px;"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">New report created</div>
+                                    <div class="activity-description">"Monthly Sales Summary" is ready for review</div>
+                                    <div class="activity-time">1 day ago</div>
+                                </div>
+                            </li>
+
+                            <li class="activity-item">
+                                <div class="activity-icon warning">
+                                    <i data-feather="alert-triangle" style="width: 16px; height: 16px;"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">Action recommended</div>
+                                    <div class="activity-description">AI suggests reviewing marketing spend</div>
+                                    <div class="activity-time">2 days ago</div>
+                                </div>
+                            </li>
+
+                            <li class="activity-item">
+                                <div class="activity-icon success">
+                                    <i data-feather="link" style="width: 16px; height: 16px;"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">HR system connected</div>
+                                    <div class="activity-description">Bamboo HR integration completed</div>
+                                    <div class="activity-time">3 days ago</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Data Connections Status -->
+                <div class="connections-status">
+                    <div class="section-header">
+                        <h3 class="section-title">Your Data Connections</h3>
+                        <a href="data-connections.html" class="section-action">
+                            Manage All
+                            <i data-feather="arrow-right" style="width: 14px; height: 14px;"></i>
+                        </a>
+                    </div>
+
+                    <div class="app-connections-grid">
+                        <div class="app-connection-card connected" onclick="window.location.href='data-connections.html'">
+                            <div class="app-connection-header">
+                                <div class="app-connection-logo">QB</div>
+                                <div class="app-connection-info">
+                                    <h4 class="app-connection-name">QuickBooks</h4>
+                                    <div class="app-connection-status">
+                                        <span class="app-connection-status-dot connected"></span>
+                                        Connected • Syncing every hour
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="font-size: 14px; color: var(--text-secondary); margin: 12px 0 0 0;">
+                                Last sync: 2 hours ago • 1,247 transactions
+                            </p>
+                        </div>
+
+                        <div class="app-connection-card" onclick="window.location.href='connector-wizard.html'">
+                            <div class="app-connection-header">
+                                <div class="app-connection-logo">HR</div>
+                                <div class="app-connection-info">
+                                    <h4 class="app-connection-name">Bamboo HR</h4>
+                                    <div class="app-connection-status">
+                                        <span class="app-connection-status-dot pending"></span>
+                                        Ready to connect
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="app-connection-actions">
+                                <button class="app-connection-btn primary">Connect Now</button>
+                            </div>
+                        </div>
+
+                        <div class="app-connection-card" onclick="window.location.href='connector-wizard.html'">
+                            <div class="app-connection-header">
+                                <div class="app-connection-logo">SAP</div>
+                                <div class="app-connection-info">
+                                    <h4 class="app-connection-name">SAP ERP</h4>
+                                    <div class="app-connection-status">
+                                        <span class="app-connection-status-dot disconnected"></span>
+                                        Not connected
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="app-connection-actions">
+                                <button class="app-connection-btn">Setup Connection</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/prototype.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            document.getElementById('current-time').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            animateCounters();
+            setupInteractions();
+            checkSetupStatus();
+        });
+
+        function animateCounters() {
+            setTimeout(() => {
+                const counters = document.querySelectorAll('[data-counter]');
+                counters.forEach(counter => {
+                    const target = parseInt(counter.getAttribute('data-counter'));
+                    window.PrototypeApp.animateCounter(counter, target);
+                });
+            }, 1000);
+        }
+
+        function setupInteractions() {
+            // Add hover effects to insight cards
+            const insightCards = document.querySelectorAll('.insight-card');
+            insightCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(8px)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(4px)';
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.querySelector('.app-search-input');
+            searchInput.addEventListener('input', function(e) {
+                if (e.target.value.length > 2) {
+                    window.PrototypeApp.showNotification(`Searching for "${e.target.value}"...`, 'info');
+                }
+            });
+
+            // User menu click
+            document.querySelector('.app-user-menu').addEventListener('click', function() {
+                window.PrototypeApp.showNotification('User menu - Profile, Settings, Logout options', 'info');
+            });
+        }
+
+        function checkSetupStatus() {
+            // Simulate checking if user has completed setup
+            const hasCompletedSetup = localStorage.getItem('userSetupCompleted');
+            if (hasCompletedSetup === 'true') {
+                document.getElementById('getting-started-section').style.display = 'none';
+            }
+        }
+
+        // Connection card interactions
+        document.querySelectorAll('.app-connection-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Prevent navigation if clicking on buttons
+                if (e.target.closest('button')) {
+                    e.stopPropagation();
+                    const btnText = e.target.textContent;
+                    if (btnText.includes('Connect')) {
+                        window.location.href = 'connector-wizard.html';
+                    }
+                }
+            });
+        });
+
+        // Quick action functionality
+        document.querySelectorAll('.app-quick-action').forEach(action => {
+            action.addEventListener('click', function(e) {
+                const actionText = this.textContent.trim();
+                if (!this.href || this.href.includes('#')) {
+                    e.preventDefault();
+                    window.PrototypeApp.showNotification(`${actionText} action triggered`, 'info');
+                }
+            });
+        });
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // Randomly update some metrics
+            if (Math.random() > 0.95) {
+                const metrics = document.querySelectorAll('.metric-value');
+                const randomMetric = metrics[Math.floor(Math.random() * metrics.length)];
+                const currentValue = parseInt(randomMetric.textContent.replace(/[^0-9]/g, ''));
+                const newValue = currentValue + Math.floor(Math.random() * 5) + 1;
+                randomMetric.textContent = newValue.toLocaleString();
+
+                // Show notification for significant changes
+                if (Math.random() > 0.7) {
+                    window.PrototypeApp.showNotification('📈 Real-time update: New data received', 'success');
+                }
+            }
+        }, 5000);
+
+        // Help section interactions
+        document.querySelectorAll('a[href="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const linkText = this.textContent.trim();
+                window.PrototypeApp.showNotification(`${linkText} would open here`, 'info');
+            });
+        });
+    </script>
+</body>
+</html>
